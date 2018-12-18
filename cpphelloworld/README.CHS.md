@@ -11,10 +11,11 @@
 cd $GOPATH/src/github.com/lni/dragonboat
 make clean
 make binding
+sudo make install-binding
 ```
 然后编译helloworld程序：
 ```
-cd example/cpphelloworld
+cd $GOPATH/src/github.com/lni/dragonboat-example/cpphelloworld
 make
 ```
 

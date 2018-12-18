@@ -1,6 +1,8 @@
 ## About ##
 This repo contains examples for [dragonboat](http://github.com/lni/dragonboat).
 
+Please first make sure you have the dragonboat library installed, instructions can be found [here](http://github.com/lni/dragonboat).
+
 ## Examples / [中文版](README.CHS.md) ##
 
 * [Example 1](helloworld) - Hello World

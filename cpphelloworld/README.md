@@ -9,10 +9,11 @@ To build the C++ hello-world executable, first build the C++ binding in Dragonbo
 cd $GOPATH/src/github.com/lni/dragonboat
 make clean
 make binding
+sudo make install-binding
 ```
 then build the C++ hello-world executable:
 ```
-cd examples/cpphelloworld
+cd $GOPATH/src/github.com/lni/dragonboat-example/cpphelloworld
 make
 ```
 

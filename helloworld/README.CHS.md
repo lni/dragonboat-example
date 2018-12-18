@@ -13,12 +13,12 @@
 ## 编译 ##
 执行下面的命令以编译helloworld程序：
 ```
-cd $GOPATH/src/github.com/lni/dragonboat
+cd $GOPATH/src/github.com/lni/dragonboat-example
 make example-helloword
 ```
 在我们所使用的开发系统中，上述make命令会调用如下的go build命令。请注意其中的CGO_LDFLAGS变量，它用来向go build工具提供RocksDB的库文件位置信息。取决于您的RocksDB具体安装位置，当编译您自己的dragonboat应用程序时，您可能也需要CGO_CFLAGS来向go build提供RocksDB头文件位置的信息，比如您可以使用CGO_CFLAGS="-I/home/xyz/local/include"，如果RocksDB的头文件是安装于/home/xyz/local/include。
 ```
-CGO_LDFLAGS="-L/usr/local/lib -lrocksdb" go build -v -tags=" " -o example-helloworld github.com/lni/dragonboat/examples/helloworld
+CGO_LDFLAGS="-L/usr/local/lib -lrocksdb" go build -v -tags=" " -o example-helloworld github.com/lni/dragonboat-example/helloworld
 ```
 
 ## 首次运行 ##
@@ -89,7 +89,7 @@ remove 4
 所有保存的数据均位于example-data的子目录内，可以手工删除这个example-data目录从而重新开始本例程。
 
 ## 代码 ##
-在[datastore.go](datastore.go?ts=2)中，ExampleStore结构体用来实现datastore.IDataStore接口。这个data store结构体用来实现应用程序自己的状态机逻辑。具体的内容将在[下一示例](../datastore/README.CHS.md)中展开。
+在[datastore.go](datastore.go?ts=2)中，ExampleStore结构体用来实现datastore.IDataStore接口。这个data store结构体用来实现应用程序自己的状态机逻辑。具体的内容将在[下一示例](README.DS.CHS.md)中展开。
 
 main.go含有main()入口函数，在里面我们实例化了一个NodeHost实例，把所创建的Raft集群节点加入了这个实例。它同时使用多个goroutine来做用户输入消息和Ctrl+C信号的处理。同时请留意MakeProposal()函数的错误处理部分代码和注释。
 

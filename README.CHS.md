@@ -1,6 +1,8 @@
 ## 关于 ##
 本repo含[dragonboat](http://github.com/lni/dragonboat)项目的示例程序
 
+请首先确认您已安装了dragonboat库，具体方法请参见[这里](http://github.com/lni/dragonboat)
+
 ## 示例 ##
 
 * [示例 1](helloworld) - Hello World

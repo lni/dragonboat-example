@@ -13,12 +13,12 @@ This example aims to give you an overview of Dragonboat's basic features, such a
 ## Build ##
 To build the helloworld executable -
 ```
-cd $GOPATH/src/github.com/lni/dragonboat
-make example-helloword
+cd $GOPATH/src/github.com/lni/dragonboat-example
+make helloword
 ```
 On our DEV system, this leads the following go build command to be executed. Note the CGO_LDFLAGS variable passed to the go build command, it is used to inform the go tool where to locate the RocksDB library when linking. Depends on your RocksDB installation, when building your own dragonboat based applications, you might also need to use CGO_CFLAGS to specify where to locate RocksDB headers, e.g. CGO_CFLAGS="-I/home/xyz/local/include" if the headers are installed at /home/xyz/local/include.
 ```
-CGO_LDFLAGS="-L/usr/local/lib -lrocksdb" go build -v -tags=" " -o example-helloworld github.com/lni/dragonboat/examples/helloworld
+CGO_LDFLAGS="-L/usr/local/lib -lrocksdb"  go build -v -o example-helloworld github.com/lni/dragonboat-example/helloworld
 ```
 
 ## First Run ##
@@ -89,7 +89,7 @@ Note that adding a previously removed node back to the cluster is not allowed.
 All saved data is saved into the example-data folder, you can delete this example-data folder and restart all processes to start over again.
 
 ## Code! ##
-In [datastore.go](datastore.go?ts=2), we have this ExampleStore struct which implements the datastore.IDataStore interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](../datastore). 
+In [datastore.go](datastore.go?ts=2), we have this ExampleStore struct which implements the datastore.IDataStore interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](README.DS.md). 
 
 main.go contains the main() function, it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. It uses multiple goroutines for input and signal handling. Updates to the IDataStore instance is achieved by making proposals.
 
