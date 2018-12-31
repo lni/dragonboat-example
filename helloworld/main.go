@@ -203,7 +203,7 @@ func main() {
 			select {
 			case <-ticker.C:
 				ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-				result, err := nh.MakeLinearizableRead(ctx, exampleClusterID, []byte{})
+				result, err := nh.SyncRead(ctx, exampleClusterID, []byte{})
 				cancel()
 				if err == nil {
 					var count uint64
@@ -234,10 +234,10 @@ func main() {
 					// input is a regular message need to be proposed
 					ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 					// make a proposal to update the IDataStore instance
-					_, err := nh.MakeProposal(ctx, cs, []byte(msg))
+					_, err := nh.SyncPropose(ctx, cs, []byte(msg))
 					cancel()
 					if err != nil {
-						fmt.Fprintf(os.Stderr, "make proposal returned error %v\n", err)
+						fmt.Fprintf(os.Stderr, "SyncPropose returned error %v\n", err)
 					}
 				}
 			case <-raftStopper.ShouldStop():

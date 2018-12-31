@@ -1,0 +1,4 @@
+/example-helloworld
+cpphelloworld/cpphelloworld
+*.o
+*.so
