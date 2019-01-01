@@ -34,6 +34,6 @@ make
 这将组建了一个三节点的Raft集群。本示例程序的行为和Go版本的[示例1 - Hello World](../helloworld/README.CHS.md)十分相似。
 
 ## 代码 ##
-[statemachine.h](statemachine.h)和[statemachine.cpp](statemachine.cpp)实现本应用所使用的StateMachine. 和[plugin.h](plugin.h)以及[plugin.cpp](plugin.cpp)一起, 它们可以用来编译产生一个名为dragonboat-cpp-plugin-cpphelloworld.so的插件。
+[statemachine.h](statemachine.h)和[statemachine.cpp](statemachine.cpp)实现本应用所使用的StateMachine. 和[plugin.cpp](plugin.cpp)一起, 它们可以用来编译产生一个名为dragonboat-cpp-plugin-cpphelloworld.so的plugin。
 
 [helloworld.cpp](helloworld.cpp)含main函数，它将启动一个Raft节点并实现本程序的功能与行为。[helloworld.cpp](helloworld.cpp)含详细注释，以解读各细节。
