@@ -93,8 +93,8 @@ Note that adding a previously removed node back to the cluster is not allowed.
 All saved data is saved into the example-data folder, you can delete this example-data folder and restart all processes to start over again.
 
 ## Code! ##
-In [datastore.go](datastore.go), we have this ExampleStore struct which implements the datastore.IDataStore interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](README.DS.md). 
+In [statemachine.go](statemachine.go), we have this ExampleStateMachine struct which implements the statemachine.IStateMachine interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](README.DS.md). 
 
-[main.go](main.go) contains the main() function, it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. It uses multiple goroutines for input and signal handling. Updates to the IDataStore instance is achieved by making proposals.
+[main.go](main.go) contains the main() function, it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. It uses multiple goroutines for input and signal handling. Updates to the IStateMachine instance is achieved by making proposals.
 
 makeMembershipChange() shows how to make membership changes, including add or remove nodes.

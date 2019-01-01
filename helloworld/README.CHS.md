@@ -89,7 +89,7 @@ remove 4
 所有保存的数据均位于example-data的子目录内，可以手工删除这个example-data目录从而重新开始本例程。
 
 ## 代码 ##
-在[datastore.go](datastore.go)中，ExampleStore结构体用来实现datastore.IDataStore接口。这个data store结构体用来实现应用程序自己的状态机逻辑。具体的内容将在[下一示例](README.DS.CHS.md)中展开。
+在[statemachine.go](statemachine.go)中，ExampleStateMachine结构体用来实现statemachine.IStateMachine接口。这个data store结构体用来实现应用程序自己的状态机逻辑。具体的内容将在[下一示例](README.DS.CHS.md)中展开。
 
 [main.go](main.go)含有main()入口函数，在里面我们实例化了一个NodeHost实例，把所创建的Raft集群节点加入了这个实例。它同时使用多个goroutine来做用户输入消息和Ctrl+C信号的处理。同时请留意MakeProposal()函数的错误处理部分代码和注释。
 

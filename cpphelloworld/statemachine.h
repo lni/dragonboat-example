@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef EXAMPLES_CPPHELLOWORLD_DATASTORE_H_
-#define EXAMPLES_CPPHELLOWORLD_DATASTORE_H_
+#ifndef EXAMPLES_CPPHELLOWORLD_STATEMACHINE_H_
+#define EXAMPLES_CPPHELLOWORLD_STATEMACHINE_H_
 
-#include "dragonboat/datastore.h"
+#include "dragonboat/statemachine.h"
 
-// HelloWorldDataStore is an example CPP DataStore. It shows how to implement
-// a DataStore with your own application logic and interact with the rest of
+// HelloWorldStateMachine is an example CPP StateMachine. It shows how to implement
+// a StateMachine with your own application logic and interact with the rest of
 // the Dragonboat system.
 // Basically, the logic is simple - this data store increases the update_count_
 // member variable for each incoming update request no matter what is in the
 // update request. Lookup requests always return the integer value stored in
 // update_count_, same as the getHash method.
 //
-// See datastore.h for more details about the DataStore interface.
-class HelloWorldDataStore : public dragonboat::DataStore
+// See statemachine.h for more details about the StateMachine interface.
+class HelloWorldStateMachine : public dragonboat::StateMachine
 {
  public:
-  HelloWorldDataStore(uint64_t clusterID, uint64_t nodeID) noexcept;
-  ~HelloWorldDataStore();
+  HelloWorldStateMachine(uint64_t clusterID, uint64_t nodeID) noexcept;
+  ~HelloWorldStateMachine();
  protected:
   uint64_t update(const dragonboat::Byte *data, size_t size) noexcept override;
   LookupResult lookup(const dragonboat::Byte *data,
@@ -44,8 +44,8 @@ class HelloWorldDataStore : public dragonboat::DataStore
     const dragonboat::DoneChan &done) noexcept override;
   void freeLookupResult(LookupResult r) noexcept override;
  private:
-  DISALLOW_COPY_MOVE_AND_ASSIGN(HelloWorldDataStore);
+  DISALLOW_COPY_MOVE_AND_ASSIGN(HelloWorldStateMachine);
   int update_count_;
 };
 
-#endif  // EXAMPLES_CPPHELLOWORLD_DATASTORE_H_
+#endif  // EXAMPLES_CPPHELLOWORLD_STATEMACHINE_H_

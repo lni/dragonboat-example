@@ -83,7 +83,7 @@ int main(int argc, char **argv, char **env)
       {
         count = 0;
         dragonboat::Status rs =
-          nh->MakeLinearizableRead(defaultClusterID, query, &result, timeout);
+          nh->SyncRead(defaultClusterID, query, &result, timeout);
         if (rs.OK())
         {
           dragonboat::Byte *c = const_cast<dragonboat::Byte *>(result.Data());
@@ -110,7 +110,7 @@ int main(int argc, char **argv, char **env)
     dragonboat::UpdateResult result;
     dragonboat::Buffer buf(
       (const dragonboat::Byte *)message.c_str(), message.size());
-    status = nh->MakeProposal(cs.get(), buf, timeout, &result);
+    status = nh->SyncPropose(cs.get(), buf, timeout, &result);
     if (!status.OK())
     {
       std::cerr << "make proposal failed, error code " <<

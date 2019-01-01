@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "datastore.h"
+#include "statemachine.h"
 
-extern "C" CPPDataStore *CreateDragonboatPluginDataStore(uint64_t clusterID,
+extern "C" CPPStateMachine *CreateDragonboatPluginStateMachine(uint64_t clusterID,
   uint64_t nodeID)
 {
-  CPPDataStore *cds = new CPPDataStore;
-  cds->store = new HelloWorldDataStore(clusterID, nodeID);
+  CPPStateMachine *cds = new CPPStateMachine;
+  cds->sm = new HelloWorldStateMachine(clusterID, nodeID);
   return cds;
 }

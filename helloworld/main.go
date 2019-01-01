@@ -171,7 +171,7 @@ func main() {
 	// peers is always populated here, but its content is only used when you are
 	// starting a brand new cluster for the first time. Its content is ignored
 	// when you are restarting a stopped node or joining a new node
-	if err := nh.StartCluster(peers, *join, NewExampleStore, rc); err != nil {
+	if err := nh.StartCluster(peers, *join, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
@@ -197,7 +197,7 @@ func main() {
 	})
 	raftStopper.RunWorker(func() {
 		// this goroutine makes a linearizable read every 10 second. it returns the
-		// Count value maintained in IDataStore. see datastore.go for details.
+		// Count value maintained in IStateMachine. see datastore.go for details.
 		ticker := time.NewTicker(10 * time.Second)
 		for {
 			select {
@@ -233,7 +233,7 @@ func main() {
 				} else {
 					// input is a regular message need to be proposed
 					ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-					// make a proposal to update the IDataStore instance
+					// make a proposal to update the IStateMachine instance
 					_, err := nh.SyncPropose(ctx, cs, []byte(msg))
 					cancel()
 					if err != nil {

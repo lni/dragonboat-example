@@ -20,49 +20,49 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/lni/dragonboat/datastore"
+	"github.com/lni/dragonboat/statemachine"
 )
 
-// ExampleStore is the IDataStore implementation used in the helloworld example
-type ExampleStore struct {
+// ExampleStateMachine is the IStateMachine implementation used in the helloworld example
+type ExampleStateMachine struct {
 	ClusterID uint64
 	NodeID    uint64
 	Count     uint64
 }
 
-// NewExampleStore creates and return a new ExampleStore object.
-func NewExampleStore(clusterID uint64, nodeID uint64) datastore.IDataStore {
-	return &ExampleStore{
+// NewExampleStateMachine creates and return a new ExampleStateMachine object.
+func NewExampleStateMachine(clusterID uint64, nodeID uint64) statemachine.IStateMachine {
+	return &ExampleStateMachine{
 		ClusterID: clusterID,
 		NodeID:    nodeID,
 		Count:     0,
 	}
 }
 
-// Lookup performs local lookup on the ExampleStore instance. In this example,
+// Lookup performs local lookup on the ExampleStateMachine instance. In this example,
 // we always return the Count value as a little endian binary encoded byte
 // slice.
-func (s *ExampleStore) Lookup(query []byte) []byte {
+func (s *ExampleStateMachine) Lookup(query []byte) []byte {
 	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, s.Count)
 	return result
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *ExampleStore) Update(data []byte) uint64 {
+func (s *ExampleStateMachine) Update(data []byte) uint64 {
 	// in this example, we print out the following hello world message for each
 	// incoming update request. we also increase the counter by one to remember
 	// how many updates we have applied
 	s.Count++
-	fmt.Printf("from ExampleStore.Update(), msg: %s, count:%d\n",
+	fmt.Printf("from ExampleStateMachine.Update(), msg: %s, count:%d\n",
 		string(data), s.Count)
 	return uint64(len(data))
 }
 
 // SaveSnapshot saves the current object state into a snapshot using the
 // specified io.Writer object.
-func (s *ExampleStore) SaveSnapshot(w io.Writer,
-	fc datastore.ISnapshotFileCollection,
+func (s *ExampleStateMachine) SaveSnapshot(w io.Writer,
+	fc statemachine.ISnapshotFileCollection,
 	done <-chan struct{}) (uint64, error) {
 	// as shown above, the only state that can be saved is the Count variable
 	data := make([]byte, 8)
@@ -75,8 +75,8 @@ func (s *ExampleStore) SaveSnapshot(w io.Writer,
 }
 
 // RecoverFromSnapshot recovers the state using the provided snapshot.
-func (s *ExampleStore) RecoverFromSnapshot(r io.Reader,
-	files []datastore.SnapshotFile,
+func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
+	files []statemachine.SnapshotFile,
 	done <-chan struct{}) error {
 	// restore the Count variable
 	data, err := ioutil.ReadAll(r)
@@ -88,13 +88,13 @@ func (s *ExampleStore) RecoverFromSnapshot(r io.Reader,
 	return nil
 }
 
-// Close closes the IDataStore instance. There is nothing for us to cleanup or
+// Close closes the IStateMachine instance. There is nothing for us to cleanup or
 // release as this is a pure in memory data store.
-func (s *ExampleStore) Close() {}
+func (s *ExampleStateMachine) Close() {}
 
 // GetHash returns a uint64 representing the current object state.
-func (s *ExampleStore) GetHash() uint64 {
+func (s *ExampleStateMachine) GetHash() uint64 {
 	// again - the only state we have is that Count variable. that
-	// uint64 pretty much represents the state of this IDataStore
+	// uint64 pretty much represents the state of this IStateMachine
 	return s.Count
 }

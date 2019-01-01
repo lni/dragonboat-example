@@ -17,19 +17,19 @@
 #include <cstring>
 #include <unistd.h>
 #include <iostream>
-#include "datastore.h"
+#include "statemachine.h"
 
-HelloWorldDataStore::HelloWorldDataStore(uint64_t clusterID,
+HelloWorldStateMachine::HelloWorldStateMachine(uint64_t clusterID,
   uint64_t nodeID) noexcept
-  : dragonboat::DataStore(clusterID, nodeID), update_count_(0)
+  : dragonboat::StateMachine(clusterID, nodeID), update_count_(0)
 {
 }
 
-HelloWorldDataStore::~HelloWorldDataStore()
+HelloWorldStateMachine::~HelloWorldStateMachine()
 {
 }
 
-uint64_t HelloWorldDataStore::update(const dragonboat::Byte *data,
+uint64_t HelloWorldStateMachine::update(const dragonboat::Byte *data,
   size_t sz) noexcept
 {
   char *c = reinterpret_cast<char*>(const_cast<dragonboat::Byte*>(data));
@@ -38,7 +38,7 @@ uint64_t HelloWorldDataStore::update(const dragonboat::Byte *data,
   return update_count_;
 }
 
-LookupResult HelloWorldDataStore::lookup(const dragonboat::Byte *data,
+LookupResult HelloWorldStateMachine::lookup(const dragonboat::Byte *data,
   size_t sz) const noexcept
 {
   // return the update_count_ value
@@ -49,12 +49,12 @@ LookupResult HelloWorldDataStore::lookup(const dragonboat::Byte *data,
   return r;
 }
 
-uint64_t HelloWorldDataStore::getHash() const noexcept
+uint64_t HelloWorldStateMachine::getHash() const noexcept
 {
   return (uint64_t)update_count_;
 }
 
-SnapshotResult HelloWorldDataStore::saveSnapshot(
+SnapshotResult HelloWorldStateMachine::saveSnapshot(
   dragonboat::SnapshotWriter *writer,
   dragonboat::SnapshotFileCollection *collection,
   const dragonboat::DoneChan &done) const noexcept
@@ -72,7 +72,7 @@ SnapshotResult HelloWorldDataStore::saveSnapshot(
   return r;
 }
 
-int HelloWorldDataStore::recoverFromSnapshot(dragonboat::SnapshotReader *reader,
+int HelloWorldStateMachine::recoverFromSnapshot(dragonboat::SnapshotReader *reader,
   const std::vector<dragonboat::SnapshotFile> &files,
   const dragonboat::DoneChan &done) noexcept
 {
@@ -86,7 +86,7 @@ int HelloWorldDataStore::recoverFromSnapshot(dragonboat::SnapshotReader *reader,
   return SNAPSHOT_OK;
 }
 
-void HelloWorldDataStore::freeLookupResult(LookupResult r) noexcept
+void HelloWorldStateMachine::freeLookupResult(LookupResult r) noexcept
 {
   delete[] r.result;
 }
