@@ -1,7 +1,9 @@
 # Example 3 - C++ Hello World #
 
 ## About ##
-This example aims to give you an overview of Dragonboat's C++11 binding, which allows you to use Dragonboat in your C++ projects. You can safely ignore the C++ binding if your project is in Golang.
+Please ignore this example and Dragonboat's C++ binding if your project is in Go.
+
+This example aims to give you an overview of Dragonboat's C++11 binding, which allows you to use Dragonboat in your C++ projects.
 
 ## Build ##
 To build the C++ hello-world executable, first build the C++ binding in Dragonboat's top level directory:

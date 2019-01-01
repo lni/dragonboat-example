@@ -14,9 +14,12 @@ This example aims to give you an overview of Dragonboat's basic features, such a
 To build the helloworld executable -
 ```
 cd $GOPATH/src/github.com/lni/dragonboat-example
-make helloword
+make helloworld
 ```
-On our DEV system, this leads the following go build command to be executed. Note the CGO_LDFLAGS variable passed to the go build command, it is used to inform the go tool where to locate the RocksDB library when linking. Depends on your RocksDB installation, when building your own dragonboat based applications, you might also need to use CGO_CFLAGS to specify where to locate RocksDB headers, e.g. CGO_CFLAGS="-I/home/xyz/local/include" if the headers are installed at /home/xyz/local/include.
+On our DEV system, this leads the following go build command to be executed.
+
+Note the CGO_LDFLAGS variable passed to the go build command, it is used to inform the go tool where to locate the RocksDB library when linking. Depends on your RocksDB installation, you might also need to use CGO_CFLAGS to specify where to locate RocksDB headers, e.g. CGO_CFLAGS="-I/home/xyz/local/include" if the headers are installed at /home/xyz/local/include.
+
 ```
 CGO_LDFLAGS="-L/usr/local/lib -lrocksdb"  go build -v -o example-helloworld github.com/lni/dragonboat-example/helloworld
 ```
@@ -46,12 +49,13 @@ Each helloworld process has a background goroutine performing linearizable read 
 ## Quorum ##
 As long as the majority of nodes in the Raft cluster are available, the cluster is said to has the quorum. For such a 3-nodes Raft cluster, any two nodes need to be available to have the quorum.
 
-Now press CTRL+C in any one of the terminal to stop it. Type in some messsages again in any of the remaining two terminals, you should still be able to have the message replicated across to the other node as the Raft cluster still has the quorum. Let's press CTRL+C to stop another instance, you should notice that further input messages will no longer be printed back on the remaining terminal and you are expected to see a timeout message. 
+Now press CTRL+C in any one of the terminal to stop the running exmple-helloworld program. Type in some messsages again in any of the remaining two terminals, you should still be able to have the message replicated across to the other node as the Raft cluster still has the quorum. Let's press CTRL+C to stop another instance, you should notice that further input messages will no longer be printed back on the remaining terminal and you are expected to see a timeout message. 
 
 ```
 failed to get a proposal session, timeout
 2017-09-09 00:04:09.039257 W | transport: breaker localhost:63003 failed, connect and process failed: context deadline exceeded
 ```
+
 ## Restart a node ##
 Let's pick a stopped instance and restart it using the exact same command, e.g. for the one which we previously started with the *-nodeid 2* command line option, it can be restarted using the command below - 
 ```
@@ -61,7 +65,7 @@ Let's pick a stopped instance and restart it using the exact same command, e.g. 
 Previously replicated messages are printed back onto the terminal again in the same order as they were initially replicated across. Dragonboat internally records the state of the node and all updates to make sure it can be correctly restored after restart. 
 
 ## Snapshotting ##
-After proposing several more messages, there will be logs mentioning that "snapshot captured". This is controled by the SnapshotEntries parameter specified in the raft.Config object. Snapshots can be used to restore the state of the program without requiring every single proposed messages to be applied from the very beginning.
+After proposing several more messages, there will be logs mentioning that "snapshot captured". This is controled by the SnapshotEntries parameter specified in the raft.Config object. Snapshots can be used to restore the state of the program without requiring every single proposed messages to be applied one by one.
 
 ## Membership Change ##
 In this example program, Raft cluster membership can be changed by inputing some messages with special format. The following special message causes a new node with node ID 4 running at localhost:63100 to be added to the Raft cluster.
@@ -69,7 +73,7 @@ In this example program, Raft cluster membership can be changed by inputing some
 ```
 add localhost:63100 4
 ```
-Once the membership change is completed, you can start the node in a new terminal using the following shell command - 
+Once the membership change is completed, you can start this recently added node in a new terminal using the following shell command - 
 ```
 ./example-helloworld -nodeid 4 -addr localhost:63100 -join
 ```
@@ -89,8 +93,8 @@ Note that adding a previously removed node back to the cluster is not allowed.
 All saved data is saved into the example-data folder, you can delete this example-data folder and restart all processes to start over again.
 
 ## Code! ##
-In [datastore.go](datastore.go?ts=2), we have this ExampleStore struct which implements the datastore.IDataStore interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](README.DS.md). 
+In [datastore.go](datastore.go), we have this ExampleStore struct which implements the datastore.IDataStore interface. This is the data store struct for implementing the application state machine. We will leave the details to the [next example](README.DS.md). 
 
-main.go contains the main() function, it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. It uses multiple goroutines for input and signal handling. Updates to the IDataStore instance is achieved by making proposals.
+[main.go](main.go) contains the main() function, it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. It uses multiple goroutines for input and signal handling. Updates to the IDataStore instance is achieved by making proposals.
 
 makeMembershipChange() shows how to make membership changes, including add or remove nodes.

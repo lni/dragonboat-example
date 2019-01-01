@@ -42,7 +42,7 @@ func NewExampleStore(clusterID uint64, nodeID uint64) datastore.IDataStore {
 // Lookup performs local lookup on the ExampleStore instance. In this example,
 // we always return the Count value as a little endian binary encoded byte
 // slice.
-func (s *ExampleStore) Lookup(key []byte) []byte {
+func (s *ExampleStore) Lookup(query []byte) []byte {
 	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, s.Count)
 	return result

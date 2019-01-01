@@ -1,9 +1,9 @@
 # 示例3 - C++ Hello World #
 
 ## 关于 ##
-本示例将给您一个C++使用Dragonboat库的概览。
+如果您计划在Go项目中使用Dragonboat，您可以跳过本示例并忽略Dragonboat的C++ binding功能。
 
-如果您计划在Golang项目中使用Dragonboat，您可以跳过本示例。
+本示例将给您一个C++使用Dragonboat库的概览。
 
 ## 编译 ##
 为了编译helloworld示例可执行文件，首先编译Dragonboat C++支持库。在Dragonboat的顶层目录：
