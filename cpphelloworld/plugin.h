@@ -15,13 +15,13 @@
 #ifndef EXAMPLES_CPPHELLOWORLD_PLUGIN_H_
 #define EXAMPLES_CPPHELLOWORLD_PLUGIN_H_
 
-#include "dragonboat/datastore.h"
+#include "dragonboat/statemachine.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-CPPDataStore *CreateDragonboatPluginDataStore(uint64_t clusterID,
+CPPStateMachine *CreateDragonboatPluginStateMachine(uint64_t clusterID,
   uint64_t nodeID);
 
 #ifdef __cplusplus
