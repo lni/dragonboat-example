@@ -6,7 +6,7 @@
 ## 示例 ##
 
 * [示例 1](helloworld) - Hello World
-* [示例 2](helloworld/README.DS.md) - Data Store
+* [示例 2](helloworld/README.DS.md) - State Machine 状态机
 
 可选 - C++ binding示例:
 

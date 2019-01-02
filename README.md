@@ -6,7 +6,7 @@ Please first make sure you have the dragonboat library installed, instructions c
 ## Examples / [中文版](README.CHS.md) ##
 
 * [Example 1](helloworld) - Hello World
-* [Example 2](helloworld/README.DS.md) - Data Store
+* [Example 2](helloworld/README.DS.md) - State Machine
 
 Optional - C++ binding:
 
