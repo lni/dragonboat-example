@@ -25,9 +25,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/lni/dragonboat"
@@ -114,6 +117,10 @@ func main() {
 	if len(*addr) == 0 && *nodeID != 1 && *nodeID != 2 && *nodeID != 3 {
 		fmt.Fprintf(os.Stderr, "node id must be 1, 2 or 3 when address is not specified\n")
 		os.Exit(1)
+	}
+	// https://github.com/golang/go/issues/17393
+	if runtime.GOOS == "darwin" {
+		signal.Ignore(syscall.Signal(0xd))
 	}
 	peers := make(map[uint64]string)
 	for idx, v := range addresses {
