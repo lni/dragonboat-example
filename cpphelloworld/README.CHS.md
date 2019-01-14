@@ -1,4 +1,4 @@
-# 示例3 - C++ Hello World #
+# 示例4 - C++ Hello World #
 
 ## 关于 ##
 如果您计划在Go项目中使用Dragonboat，您可以跳过本示例并忽略Dragonboat的C++ binding功能。

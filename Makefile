@@ -52,11 +52,14 @@ all: helloworld
 helloworld:
 	$(GOCMD) -o example-helloworld github.com/lni/dragonboat-example/helloworld
 
+multigroup:
+	$(GOCMD) -o example-multigroup github.com/lni/dragonboat-example/multigroup
+
 cpphelloworld:
 	make -C cpphelloworld
 
 clean:
 	@make -C cpphelloworld clean
-	@rm -f example-helloworld
+	@rm -f example-helloworld example-multigroup
 
-.PHONY: helloworld cpphelloworld clean
+.PHONY: helloworld multigroup cpphelloworld clean

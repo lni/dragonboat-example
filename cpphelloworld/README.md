@@ -1,4 +1,4 @@
-# Example 3 - C++ Hello World #
+# Example 4 - C++ Hello World #
 
 ## About ##
 Please ignore this example and Dragonboat's C++ binding if your project is in Go.
