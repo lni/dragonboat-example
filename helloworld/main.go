@@ -60,14 +60,15 @@ func makeMembershipChange(nh *dragonboat.NodeHost,
 	var err error
 	if cmd == "add" {
 		// orderID is ignored in standalone mode
-		rs, err = nh.RequestAddNode(exampleClusterID, nodeID, addr, 0, 5000)
+		rs, err = nh.RequestAddNode(exampleClusterID, nodeID, addr, 0, 3*time.Second)
 	} else if cmd == "remove" {
-		rs, err = nh.RequestDeleteNode(exampleClusterID, nodeID, 0, 5000)
+		rs, err = nh.RequestDeleteNode(exampleClusterID, nodeID, 0, 3*time.Second)
 	} else {
 		panic("unknown cmd")
 	}
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "membership change failed, %v\n", err)
+		return
 	}
 	select {
 	case r := <-rs.CompletedC:
@@ -123,12 +124,19 @@ func main() {
 		signal.Ignore(syscall.Signal(0xd))
 	}
 	peers := make(map[uint64]string)
-	for idx, v := range addresses {
-		// key is the NodeID, NodeID is not allowed to be 0
-		// value is the raft address
-		peers[uint64(idx+1)] = v
+	// when joining a new node which is not an initial members, the peers map should
+	// be empty.
+	if !*join {
+		for idx, v := range addresses {
+			// key is the NodeID, NodeID is not allowed to be 0
+			// value is the raft address
+			peers[uint64(idx+1)] = v
+		}
 	}
 	var nodeAddr string
+	// for simplicity, in this example program, addresses of all those 3 initial
+	// raft members are hard coded. when address is not specified on the command
+	// line, we assume the node being launched is an initial raft member.
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
@@ -175,9 +183,6 @@ func main() {
 		// RaftRPCFactory: rpc.NewRaftGRPC,
 	}
 	nh := dragonboat.NewNodeHost(nhc)
-	// peers is always populated here, but its content is only used when you are
-	// starting a brand new cluster for the first time. Its content is ignored
-	// when you are restarting a stopped node or joining a new node
 	if err := nh.StartCluster(peers, *join, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
