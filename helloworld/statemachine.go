@@ -23,7 +23,10 @@ import (
 	"github.com/lni/dragonboat/statemachine"
 )
 
-// ExampleStateMachine is the IStateMachine implementation used in the helloworld example
+// ExampleStateMachine is the IStateMachine implementation used in the
+// helloworld example.
+// See https://github.com/lni/dragonboat/blob/master/statemachine/rsm.go for
+// more details of the IStateMachine interface.
 type ExampleStateMachine struct {
 	ClusterID uint64
 	NodeID    uint64
@@ -31,7 +34,8 @@ type ExampleStateMachine struct {
 }
 
 // NewExampleStateMachine creates and return a new ExampleStateMachine object.
-func NewExampleStateMachine(clusterID uint64, nodeID uint64) statemachine.IStateMachine {
+func NewExampleStateMachine(clusterID uint64,
+	nodeID uint64) statemachine.IStateMachine {
 	return &ExampleStateMachine{
 		ClusterID: clusterID,
 		NodeID:    nodeID,
@@ -59,12 +63,14 @@ func (s *ExampleStateMachine) Update(data []byte) uint64 {
 	return uint64(len(data))
 }
 
-// SaveSnapshot saves the current object state into a snapshot using the
+// SaveSnapshot saves the current IStateMachine state into a snapshot using the
 // specified io.Writer object.
 func (s *ExampleStateMachine) SaveSnapshot(w io.Writer,
 	fc statemachine.ISnapshotFileCollection,
 	done <-chan struct{}) (uint64, error) {
 	// as shown above, the only state that can be saved is the Count variable
+	// there is no external file in this IStateMachine example, we thus leave
+	// the fc untouched
 	data := make([]byte, 8)
 	binary.LittleEndian.PutUint64(data, s.Count)
 	_, err := w.Write(data)
@@ -78,7 +84,8 @@ func (s *ExampleStateMachine) SaveSnapshot(w io.Writer,
 func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
 	files []statemachine.SnapshotFile,
 	done <-chan struct{}) error {
-	// restore the Count variable
+	// restore the Count variable, that is the only state we maintain in this
+	// example, the input files is expected to be empty
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -88,13 +95,14 @@ func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
 	return nil
 }
 
-// Close closes the IStateMachine instance. There is nothing for us to cleanup or
-// release as this is a pure in memory data store.
+// Close closes the IStateMachine instance. There is nothing for us to cleanup
+// or release as this is a pure in memory data store. Note that the Close
+// method is not guaranteed to be called as node can crash at any time.
 func (s *ExampleStateMachine) Close() {}
 
 // GetHash returns a uint64 representing the current object state.
 func (s *ExampleStateMachine) GetHash() uint64 {
-	// again - the only state we have is that Count variable. that
-	// uint64 pretty much represents the state of this IStateMachine
+	// the only state we have is that Count variable. that uint64 value pretty much
+	// represents the state of this IStateMachine
 	return s.Count
 }
