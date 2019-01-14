@@ -12,4 +12,4 @@ Lookup()是一个只读的用于查询IStateMachine的方法，在本示例的�
 
 SaveSnapshot()和RecoverFromSnapshot() 用来实现快照的保存与读取。快照需要能包含IStateMachine的完整状态。IStateMachine所维护的内存内的数据可以通过所提供的以磁盘文件为后台存储的io.Writer和io.Reader来保存与恢复。请注意，SaveSnapshot()也是一个只读的方法，它不应该改变IStateMachine的状态。
 
-Close()的可以被认为是可选的。因为系统并不保证Close回被最终调用，因此IStateMachine的数据完整性不能依赖于Close()方法。
+Close()可以被认为是可选的。因为系统并不保证Close会被最终调用，因此IStateMachine的数据完整性不能依赖于Close()方法。
