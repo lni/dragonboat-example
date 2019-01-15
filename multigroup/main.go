@@ -166,6 +166,10 @@ func main() {
 				// remove the \n char
 				msg := strings.Replace(strings.TrimSpace(v), "\n", "", 1)
 				var err error
+				// In this example, the strategy on how data is sharded across different
+				// Raft groups is based on whether the input message ends with a "?".
+				// In your application, you are free to choose strategies suitable for
+				// your application.
 				if strings.HasSuffix(msg, "?") {
 					// user message ends with "?", make a proposal to update the second
 					// raft group

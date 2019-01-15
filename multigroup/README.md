@@ -26,6 +26,8 @@ This forms two Raft clusters each with 3 nodes, nodes are identified by the Node
 
 Similar to the previous helloworld example, you can type in a message in one of the terminals and your input message will be replicated to other nodes. In this example, if you type something ends with a question mark "?", then that particular message is going to be proposed to the second raft group, while messages without the question mark at the end are proposed to the first raft group. 
 
+Note that we use two Raft groups here for simplicity, in a real world application, users can scale to much larger number of Raft groups.  
+
 ## Start Over ##
 All saved data is saved into the example-data folder, you can delete this example-data folder and restart all processes to start over again.
 
