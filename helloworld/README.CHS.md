@@ -41,6 +41,10 @@ CGO_LDFLAGS="-L/usr/local/lib -lrocksdb" go build -v -tags=" " -o example-hellow
 2017-09-09 00:02:08.873755 I | transport: raft gRPC stream from [00128:00002] to [00128:00001] established
 from Update() : msg: hi there, count:1
 ```
+In the log message above, it mentions "[00128:00002]" and "[00128:00001]". They are used to identify two Raft nodes in log messages, the first one means it is a node from Raft Cluster with ClusterID 128, its NodeID is 2.
+
+在上述log消息中提到了"[00128:00002]"和"[00128:00001]"。它们是用来在log消息中指代Raft节点的，比如第一个的意义是一个来自ClusterID为128的Raft组的NodeID为2的节点。
+
 每个helloworld进程都有一个后台的goroutine以每10秒一次的频率做强一致读（Linearizable Read）。它查询已经应用的提议个数并将此结果显示到terminal上。
 
 ## 多数派 Quorum ##

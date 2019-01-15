@@ -44,6 +44,8 @@ Type in a message (also known as a proposal) and press enter in any one of those
 2017-09-09 00:02:08.873755 I | transport: raft gRPC stream from [00128:00002] to [00128:00001] established
 from Update() : msg: hi there, count:1
 ```
+In the log message above, it mentions "[00128:00002]" and "[00128:00001]". They are used to identify two Raft nodes in log messages, the first one means it is a node from Raft Cluster with ClusterID 128, its NodeID is 2. 
+
 Each helloworld process has a background goroutine performing linearizable read evrey 10 seconds. It queries the number of applied proposals and print out the result to the terminal. 
 
 ## Quorum ##
