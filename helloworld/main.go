@@ -206,19 +206,21 @@ func main() {
 		// recommended to use Enterprise SSDs with good fsync() performance
 		// to get the best performance. A few SSDs we tested or known to work very
 		// well
-		// Recommended SATA SSDs
+		// Recommended SATA SSDs -
 		// Intel S3700, Intel S3710, Micron 500DC
 		// Other SATA enterprise class SSDs with power loss protection
-		// Recommended NVME SSDs:
-		// Most Enterprise SSDs with power loss protection
-		// Intel Optane based SSDs, such as 900P/905P/P4800X/P4801X
-		// SSD to avoid:
-		// All consumer class SSDs, no matter whether they are SATA or NVME based
-		// Enterprise SSDs not using Optane but still lacks power loss protection.
-		// Such SSDs have poor fsync() performance.
+		// Recommended NVME SSDs -
+		// Most enterprise NVME currently available on the market.
+		// SSD to avoid -
+		// Consumer class SSDs, no matter whether they are SATA or NVME based, as
+		// they usually have very poor fsync() performance.
+		//
+		// You can use the pg_test_fsync tool shipped with PostgreSQL to test the
+		// fsync performance of your WAL disk. It is recommended to use SSDs with
+		// fsync latency of well below 1 millisecond.
 		//
 		// Note that this is only for storing the WAL of Raft Logs, it is size is
-		// usually pretty small, 100GB per NodeHost is usually more than enough.
+		// usually pretty small, 64GB per NodeHost is usually more than enough.
 		//
 		// If you just have one disk in your system, just set WALDir and NodeHostDir
 		// to the same location.
