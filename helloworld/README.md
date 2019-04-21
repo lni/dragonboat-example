@@ -46,7 +46,7 @@ from Update() : msg: hi there, count:1
 ```
 In the log message above, it mentions "[00128:00002]" and "[00128:00001]". They are used to identify two Raft nodes in log messages, the first one means it is a node from Raft Cluster with ClusterID 128, its NodeID is 2. 
 
-Each helloworld process has a background goroutine performing linearizable read evrey 10 seconds. It queries the number of applied proposals and print out the result to the terminal. 
+Each helloworld process has a background goroutine performing linearizable read every 10 seconds. It queries the number of applied proposals and print out the result to the terminal. 
 
 ## Quorum ##
 As long as the majority of nodes in the Raft cluster are available, the cluster is said to has the quorum. For such a 3-nodes Raft cluster, any two nodes need to be available to have the quorum.
