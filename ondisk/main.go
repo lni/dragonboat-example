@@ -74,6 +74,12 @@ func parseCommand(msg string) (RequestType, string, string, bool) {
 	return GET, parts[1], "", true
 }
 
+func printUsage() {
+	fmt.Fprintf(os.Stdout, "Usage - \n")
+	fmt.Fprintf(os.Stdout, "put key value\n")
+	fmt.Fprintf(os.Stdout, "get key\n")
+}
+
 func main() {
 	nodeID := flag.Int("nodeid", 1, "NodeID to use")
 	addr := flag.String("addr", "", "Nodehost address")
@@ -88,117 +94,40 @@ func main() {
 		signal.Ignore(syscall.Signal(0xd))
 	}
 	peers := make(map[uint64]string)
-	// when joining a new node which is not an initial members, the peers map should
-	// be empty.
 	if !*join {
 		for idx, v := range addresses {
-			// key is the NodeID, NodeID is not allowed to be 0
-			// value is the raft address
 			peers[uint64(idx+1)] = v
 		}
 	}
 	var nodeAddr string
-	// for simplicity, in this example program, addresses of all those 3 initial
-	// raft members are hard coded. when address is not specified on the command
-	// line, we assume the node being launched is an initial raft member.
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
 		nodeAddr = peers[uint64(*nodeID)]
 	}
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
-	// change the log verbosity
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
 	logger.GetLogger("rsm").SetLevel(logger.WARNING)
 	logger.GetLogger("transport").SetLevel(logger.WARNING)
 	logger.GetLogger("grpc").SetLevel(logger.WARNING)
-	// config for raft node
-	// See GoDoc for all available options
 	rc := config.Config{
-		// ClusterID and NodeID of the raft node
-		NodeID:    uint64(*nodeID),
-		ClusterID: exampleClusterID,
-		// In this example, we assume the end-to-end round trip time (RTT) between
-		// NodeHost instances (on different machines, VMs or containers) are 200
-		// millisecond, it is set in the RTTMillisecond field of the
-		// config.NodeHostConfig instance below.
-		// ElectionRTT is set to 10 in this example, it determines that the node
-		// should start an election if there is no heartbeat from the leader for
-		// 10 * RTT time intervals.
-		ElectionRTT: 10,
-		// HeartbeatRTT is set to 1 in this example, it determines that when the
-		// node is a leader, it should broadcast heartbeat messages to its followers
-		// every such 1 * RTT time interval.
-		HeartbeatRTT: 1,
-		CheckQuorum:  true,
-		// SnapshotEntries determines how often should we take a snapshot of the
-		// replicated state machine, it is set to 10 her which means a snapshot
-		// will be captured for every 10 applied proposals (writes).
-		// In your real world application, it should be set to much higher values
-		// You need to determine a suitable value based on how much space you are
-		// willing use on Raft Logs, how fast can you capture a snapshot of your
-		// replicated state machine, how often such snapshot is going to be used
-		// etc.
-		SnapshotEntries: 10,
-		// Once a snapshot is captured and saved, how many Raft entries already
-		// covered by the new snapshot should be kept. This is useful when some
-		// followers are just a little bit left behind, with such overhead Raft
-		// entries, the leaders can send them regular entries rather than the full
-		// snapshot image.
+		NodeID:             uint64(*nodeID),
+		ClusterID:          exampleClusterID,
+		ElectionRTT:        10,
+		HeartbeatRTT:       1,
+		CheckQuorum:        true,
+		SnapshotEntries:    10,
 		CompactionOverhead: 5,
 	}
 	datadir := filepath.Join(
 		"example-data",
 		"helloworld-data",
 		fmt.Sprintf("node%d", *nodeID))
-	// config for the nodehost
-	// See GoDoc for all available options
-	// by default, insecure transport is used, you can choose to use Mutual TLS
-	// Authentication to authenticate both servers and clients. To use Mutual
-	// TLS Authentication, set the MutualTLS field in NodeHostConfig to true, set
-	// the CAFile, CertFile and KeyFile fields to point to the path of your CA
-	// file, certificate and key files.
-	// by default, TCP based RPC module is used, set the RaftRPCFactory field in
-	// NodeHostConfig to rpc.NewRaftGRPC (github.com/lni/dragonboat/plugin/rpc) to
-	// use gRPC based transport. To use gRPC based RPC module, you need to install
-	// the gRPC library first -
-	//
-	// $ go get -u google.golang.org/grpc
-	//
 	nhc := config.NodeHostConfig{
-		// WALDir is the directory to store the WAL of all Raft Logs. It is
-		// recommended to use Enterprise SSDs with good fsync() performance
-		// to get the best performance. A few SSDs we tested or known to work very
-		// well
-		// Recommended SATA SSDs -
-		// Intel S3700, Intel S3710, Micron 500DC
-		// Other SATA enterprise class SSDs with power loss protection
-		// Recommended NVME SSDs -
-		// Most enterprise NVME currently available on the market.
-		// SSD to avoid -
-		// Consumer class SSDs, no matter whether they are SATA or NVME based, as
-		// they usually have very poor fsync() performance.
-		//
-		// You can use the pg_test_fsync tool shipped with PostgreSQL to test the
-		// fsync performance of your WAL disk. It is recommended to use SSDs with
-		// fsync latency of well below 1 millisecond.
-		//
-		// Note that this is only for storing the WAL of Raft Logs, it is size is
-		// usually pretty small, 64GB per NodeHost is usually more than enough.
-		//
-		// If you just have one disk in your system, just set WALDir and NodeHostDir
-		// to the same location.
-		WALDir: datadir,
-		// NodeHostDir is where everything else is stored.
-		NodeHostDir: datadir,
-		// RTTMillisecond is the average round trip time between NodeHosts (usually
-		// on two machines/vms), it is in millisecond. Such RTT includes the
-		// processing delays caused by NodeHosts, not just the network delay between
-		// two NodeHost instances.
+		WALDir:         datadir,
+		NodeHostDir:    datadir,
 		RTTMillisecond: 200,
-		// RaftAddress is used to identify the NodeHost instance
-		RaftAddress: nodeAddr,
-		// RaftRPCFactory: rpc.NewRaftGRPC,
+		RaftAddress:    nodeAddr,
 	}
 	nh := dragonboat.NewNodeHost(nhc)
 	if err := nh.StartOnDiskCluster(peers, *join, NewDiskKV, rc); err != nil {
@@ -218,16 +147,14 @@ func main() {
 			}
 			if s == "exit\n" {
 				raftStopper.Stop()
-				// no data will be lost/corrupted if nodehost.Stop() is not called
 				nh.Stop()
 				return
 			}
 			ch <- s
 		}
 	})
+	printUsage()
 	raftStopper.RunWorker(func() {
-		// use a NO-OP client session here
-		// check the example in godoc to see how to use a regular client session
 		cs := nh.GetNoOPSession(exampleClusterID)
 		for {
 			select {
@@ -235,10 +162,14 @@ func main() {
 				if !ok {
 					return
 				}
-				// remove the \n char
 				msg := strings.Replace(v, "\n", "", 1)
+				// input message must be in the following formats -
+				// put key value
+				// get key
 				rt, key, val, ok := parseCommand(msg)
 				if !ok {
+					fmt.Fprintf(os.Stderr, "invalid input\n")
+					printUsage()
 					continue
 				}
 				ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -260,7 +191,7 @@ func main() {
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "SyncRead returned error %v\n", err)
 					} else {
-						fmt.Fprintf(os.Stdout, "query result: %s\n", result)
+						fmt.Fprintf(os.Stdout, "query key: %s, result: %s\n", key, result)
 					}
 				}
 				cancel()

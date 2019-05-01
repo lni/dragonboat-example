@@ -55,11 +55,10 @@ helloworld:
 multigroup:
 	$(GOCMD) -o example-multigroup github.com/lni/dragonboat-example/multigroup
 
-cpphelloworld:
-	make -C cpphelloworld
+ondisk:
+	$(GOCMD) -o example-ondisk github.com/lni/dragonboat-example/ondisk
 
 clean:
-	@make -C cpphelloworld clean
-	@rm -f example-helloworld example-multigroup
+	@rm -f example-helloworld example-multigroup example-ondisk
 
-.PHONY: helloworld multigroup cpphelloworld clean
+.PHONY: helloworld multigroup ondisk clean

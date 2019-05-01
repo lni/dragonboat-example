@@ -1,6 +1,7 @@
 example-data
 /example-helloworld
 /example-multigroup
+/example-ondisk
 cpphelloworld/cpphelloworld
 *.o
 *.so

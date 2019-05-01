@@ -8,10 +8,7 @@ Please first make sure you have the dragonboat library installed, instructions c
 * [Example 1](helloworld) - Hello World
 * [Example 2](helloworld/README.DS.md) - State Machine
 * [Example 3](multigroup) - Multiple Raft Groups
-
-Optional - C++ binding:
-
-* [Example 4](cpphelloworld) - C++ Hello World
+* [Example 4](ondisk) - On Disk State Machine
 
 ## Next Step ##
 * [godoc](https://godoc.org/github.com/lni/dragonboat)

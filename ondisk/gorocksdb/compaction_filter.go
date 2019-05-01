@@ -26,8 +26,8 @@ type CompactionFilter interface {
 }
 
 // NewNativeCompactionFilter creates a CompactionFilter object.
-func NewNativeCompactionFilter(c *C.rocksdb_comparator_t) Comparator {
-	return nativeComparator{c}
+func NewNativeCompactionFilter(c *C.rocksdb_compactionfilter_t) CompactionFilter {
+	return nativeCompactionFilter{c}
 }
 
 type nativeCompactionFilter struct {
@@ -40,9 +40,34 @@ func (c nativeCompactionFilter) Filter(level int, key, val []byte) (remove bool,
 func (c nativeCompactionFilter) Name() string { return "" }
 
 // Hold references to compaction filters.
-var compactionFilters []CompactionFilter
+var compactionFilters = NewCOWList()
+
+type compactionFilterWrapper struct {
+	name   *C.char
+	filter CompactionFilter
+}
 
 func registerCompactionFilter(filter CompactionFilter) int {
-	compactionFilters = append(compactionFilters, filter)
-	return len(compactionFilters) - 1
+	return compactionFilters.Append(compactionFilterWrapper{C.CString(filter.Name()), filter})
+}
+
+//export gorocksdb_compactionfilter_filter
+func gorocksdb_compactionfilter_filter(idx int, cLevel C.int, cKey *C.char, cKeyLen C.size_t, cVal *C.char, cValLen C.size_t, cNewVal **C.char, cNewValLen *C.size_t, cValChanged *C.uchar) C.int {
+	key := charToByte(cKey, cKeyLen)
+	val := charToByte(cVal, cValLen)
+
+	remove, newVal := compactionFilters.Get(idx).(compactionFilterWrapper).filter.Filter(int(cLevel), key, val)
+	if remove {
+		return C.int(1)
+	} else if newVal != nil {
+		*cNewVal = byteToChar(newVal)
+		*cNewValLen = C.size_t(len(newVal))
+		*cValChanged = C.uchar(1)
+	}
+	return C.int(0)
+}
+
+//export gorocksdb_compactionfilter_name
+func gorocksdb_compactionfilter_name(idx int) *C.char {
+	return compactionFilters.Get(idx).(compactionFilterWrapper).name
 }

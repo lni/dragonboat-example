@@ -1,14 +1,11 @@
 package gorocksdb
 
-/*
-#cgo CXXFLAGS: -std=c++11 -O3
-#include <stdlib.h>
-#include "rocksdb/c.h"
-#include "extended.h"
-*/
+// #include <stdlib.h>
+// #include "rocksdb/c.h"
 import "C"
 import (
 	"errors"
+	"fmt"
 	"unsafe"
 )
 
@@ -265,6 +262,99 @@ func (db *DB) GetCF(opts *ReadOptions, cf *ColumnFamilyHandle, key []byte) (*Sli
 		return nil, errors.New(C.GoString(cErr))
 	}
 	return NewSlice(cValue, cValLen), nil
+}
+
+// MultiGet returns the data associated with the passed keys from the database
+func (db *DB) MultiGet(opts *ReadOptions, keys ...[]byte) (Slices, error) {
+	cKeys, cKeySizes := byteSlicesToCSlices(keys)
+	defer cKeys.Destroy()
+	vals := make(charsSlice, len(keys))
+	valSizes := make(sizeTSlice, len(keys))
+	rocksErrs := make(charsSlice, len(keys))
+
+	C.rocksdb_multi_get(
+		db.c,
+		opts.c,
+		C.size_t(len(keys)),
+		cKeys.c(),
+		cKeySizes.c(),
+		vals.c(),
+		valSizes.c(),
+		rocksErrs.c(),
+	)
+
+	var errs []error
+
+	for i, rocksErr := range rocksErrs {
+		if rocksErr != nil {
+			defer C.free(unsafe.Pointer(rocksErr))
+			err := fmt.Errorf("getting %q failed: %v", string(keys[i]), C.GoString(rocksErr))
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("failed to get %d keys, first error: %v", len(errs), errs[0])
+	}
+
+	slices := make(Slices, len(keys))
+	for i, val := range vals {
+		slices[i] = NewSlice(val, valSizes[i])
+	}
+
+	return slices, nil
+}
+
+// MultiGetCF returns the data associated with the passed keys from the column family
+func (db *DB) MultiGetCF(opts *ReadOptions, cf *ColumnFamilyHandle, keys ...[]byte) (Slices, error) {
+	cfs := make(ColumnFamilyHandles, len(keys))
+	for i := 0; i < len(keys); i++ {
+		cfs[i] = cf
+	}
+	return db.MultiGetCFMultiCF(opts, cfs, keys)
+}
+
+// MultiGetCFMultiCF returns the data associated with the passed keys and
+// column families.
+func (db *DB) MultiGetCFMultiCF(opts *ReadOptions, cfs ColumnFamilyHandles, keys [][]byte) (Slices, error) {
+	cKeys, cKeySizes := byteSlicesToCSlices(keys)
+	defer cKeys.Destroy()
+	vals := make(charsSlice, len(keys))
+	valSizes := make(sizeTSlice, len(keys))
+	rocksErrs := make(charsSlice, len(keys))
+
+	C.rocksdb_multi_get_cf(
+		db.c,
+		opts.c,
+		cfs.toCSlice().c(),
+		C.size_t(len(keys)),
+		cKeys.c(),
+		cKeySizes.c(),
+		vals.c(),
+		valSizes.c(),
+		rocksErrs.c(),
+	)
+
+	var errs []error
+
+	for i, rocksErr := range rocksErrs {
+		if rocksErr != nil {
+			defer C.free(unsafe.Pointer(rocksErr))
+			err := fmt.Errorf("getting %q failed: %v", string(keys[i]), C.GoString(rocksErr))
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("failed to get %d keys, first error: %v", len(errs), errs[0])
+	}
+
+	slices := make(Slices, len(keys))
+	for i, val := range vals {
+		slices[i] = NewSlice(val, valSizes[i])
+	}
+
+	return slices, nil
 }
 
 // Put writes data associated with a key to the database.
@@ -548,14 +638,6 @@ func (db *DB) CompactRange(r Range) {
 	C.rocksdb_compact_range(db.c, cStart, C.size_t(len(r.Start)), cLimit, C.size_t(len(r.Limit)))
 }
 
-// CompactRangeWithOptions runs a manual compaction with specified compaction
-// options on the Range of keys given.
-func (db *DB) CompactRangeWithOptions(opts *CompactionOptions, r Range) {
-	cStart := byteToChar(r.Start)
-	cLimit := byteToChar(r.Limit)
-	C.rocksdb_compact_range_opt(db.c, opts.c, cStart, C.size_t(len(r.Start)), cLimit, C.size_t(len(r.Limit)))
-}
-
 // CompactRangeCF runs a manual compaction on the Range of keys given on the
 // given column family. This is not likely to be needed for typical usage.
 func (db *DB) CompactRangeCF(cf *ColumnFamilyHandle, r Range) {
@@ -604,23 +686,6 @@ func (db *DB) DeleteFile(name string) {
 	cName := C.CString(name)
 	defer C.free(unsafe.Pointer(cName))
 	C.rocksdb_delete_file(db.c, cName)
-}
-
-// DeleteFileRange deletes files in the specified range.
-func (db *DB) DeleteFileInRange(startKey, limitKey []byte) error {
-	var (
-		cErr      *C.char
-		cStartKey = byteToChar(startKey)
-		cLimitKey = byteToChar(limitKey)
-	)
-	C.rocksdb_delete_file_in_range(db.c,
-		cStartKey, C.size_t(len(startKey)), cLimitKey, C.size_t(len(limitKey)), &cErr)
-	if cErr != nil {
-		defer C.free(unsafe.Pointer(cErr))
-		return errors.New(C.GoString(cErr))
-	}
-
-	return nil
 }
 
 // IngestExternalFile loads a list of external SST files.

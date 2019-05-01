@@ -4,6 +4,20 @@ package gorocksdb
 // #include "gorocksdb.h"
 import "C"
 
+// IndexType specifies the index type that will be used for this table.
+type IndexType uint
+
+const (
+	// A space efficient index block that is optimized for
+	// binary-search-based index.
+	KBinarySearchIndexType = 0
+	// The hash index, if enabled, will do the hash lookup when
+	// `Options.prefix_extractor` is provided.
+	KHashSearchIndexType = 1
+	// A two-level index implementation. Both levels are binary search indexes.
+	KTwoLevelIndexSearchIndexType = 2
+)
+
 // BlockBasedTableOptions represents block-based table options.
 type BlockBasedTableOptions struct {
 	c *C.rocksdb_block_based_table_options_t
@@ -34,6 +48,23 @@ func (opts *BlockBasedTableOptions) Destroy() {
 	opts.compCache = nil
 }
 
+// SetCacheIndexAndFilterBlocks is indicating if we'd put index/filter blocks to the block cache.
+// If not specified, each "table reader" object will pre-load index/filter
+// block during table initialization.
+// Default: false
+func (opts *BlockBasedTableOptions) SetCacheIndexAndFilterBlocks(value bool) {
+	C.rocksdb_block_based_options_set_cache_index_and_filter_blocks(opts.c, boolToChar(value))
+}
+
+// SetPinL0FilterAndIndexBlocksInCache sets cache_index_and_filter_blocks.
+// If is true and the below is true (hash_index_allow_collision), then
+// filter and index blocks are stored in the cache, but a reference is
+// held in the "table reader" object so the blocks are pinned and only
+// evicted from cache when the table reader is freed.
+func (opts *BlockBasedTableOptions) SetPinL0FilterAndIndexBlocksInCache(value bool) {
+	C.rocksdb_block_based_options_set_pin_l0_filter_and_index_blocks_in_cache(opts.c, boolToChar(value))
+}
+
 // SetBlockSize sets the approximate size of user data packed per block.
 // Note that the block size specified here corresponds opts uncompressed data.
 // The actual size of the unit read from disk may be smaller if
@@ -61,6 +92,20 @@ func (opts *BlockBasedTableOptions) SetBlockSizeDeviation(blockSizeDeviation int
 // Default: 16
 func (opts *BlockBasedTableOptions) SetBlockRestartInterval(blockRestartInterval int) {
 	C.rocksdb_block_based_options_set_block_restart_interval(opts.c, C.int(blockRestartInterval))
+}
+
+// SetFilterPolicy sets the filter policy opts reduce disk reads.
+// Many applications will benefit from passing the result of
+// NewBloomFilterPolicy() here.
+// Default: nil
+func (opts *BlockBasedTableOptions) SetFilterPolicy(fp FilterPolicy) {
+	if nfp, ok := fp.(nativeFilterPolicy); ok {
+		opts.cFp = nfp.c
+	} else {
+		idx := registerFilterPolicy(fp)
+		opts.cFp = C.gorocksdb_filterpolicy_create(C.uintptr_t(idx))
+	}
+	C.rocksdb_block_based_options_set_filter_policy(opts.c, opts.cFp)
 }
 
 // SetNoBlockCache specify whether block cache should be used or not.
@@ -94,4 +139,20 @@ func (opts *BlockBasedTableOptions) SetBlockCacheCompressed(cache *Cache) {
 // Default: true
 func (opts *BlockBasedTableOptions) SetWholeKeyFiltering(value bool) {
 	C.rocksdb_block_based_options_set_whole_key_filtering(opts.c, boolToChar(value))
+}
+
+// SetIndexType sets the index type used for this table.
+// kBinarySearch:
+// A space efficient index block that is optimized for
+// binary-search-based index.
+//
+// kHashSearch:
+// The hash index, if enabled, will do the hash lookup when
+// `Options.prefix_extractor` is provided.
+//
+// kTwoLevelIndexSearch:
+// A two-level index implementation. Both levels are binary search indexes.
+// Default: kBinarySearch
+func (opts *BlockBasedTableOptions) SetIndexType(value IndexType) {
+	C.rocksdb_block_based_options_set_index_type(opts.c, C.int(value))
 }

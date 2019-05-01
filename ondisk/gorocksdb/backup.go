@@ -1,9 +1,7 @@
 package gorocksdb
 
-/*
-#include <stdlib.h>
-#include "rocksdb/c.h"
-*/
+// #include <stdlib.h>
+// #include "rocksdb/c.h"
 import "C"
 import (
 	"errors"

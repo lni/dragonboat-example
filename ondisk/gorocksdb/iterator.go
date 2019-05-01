@@ -2,7 +2,6 @@ package gorocksdb
 
 // #include <stdlib.h>
 // #include "rocksdb/c.h"
-// #include "extended.h"
 import "C"
 import (
 	"bytes"
@@ -28,14 +27,12 @@ import (
 //      }
 //
 type Iterator struct {
-	cErr *C.char
-	cLen C.size_t
-	c    *C.rocksdb_iterator_t
+	c *C.rocksdb_iterator_t
 }
 
 // NewNativeIterator creates a Iterator object.
 func NewNativeIterator(c unsafe.Pointer) *Iterator {
-	return &Iterator{nil, 0, (*C.rocksdb_iterator_t)(c)}
+	return &Iterator{(*C.rocksdb_iterator_t)(c)}
 }
 
 // Valid returns false only when an Iterator has iterated past either the
@@ -75,24 +72,6 @@ func (iter *Iterator) Value() *Slice {
 		return nil
 	}
 	return &Slice{cVal, cLen, true}
-}
-
-// Key returns the key the iterator currently holds.
-func (iter *Iterator) OKey() (Slice, bool) {
-	cKey := C.rocksdb_iter_key(iter.c, &iter.cLen)
-	if cKey == nil {
-		return Slice{}, false
-	}
-	return Slice{cKey, iter.cLen, true}, true
-}
-
-// Value returns the value in the database the iterator currently holds.
-func (iter *Iterator) OValue() (Slice, bool) {
-	cVal := C.rocksdb_iter_value(iter.c, &iter.cLen)
-	if cVal == nil {
-		return Slice{}, false
-	}
-	return Slice{cVal, iter.cLen, true}, true
 }
 
 // Next moves the iterator to the next sequential key in the database.

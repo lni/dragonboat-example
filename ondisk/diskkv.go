@@ -38,7 +38,7 @@ import (
 
 const (
 	appliedIndexKey    string = "disk_kv_applied_index"
-	testDBDirName      string = "rocksdb_state_machine_data"
+	testDBDirName      string = "example-data"
 	currentDBFilename  string = "current"
 	updatingDBFilename string = "current.updating"
 )
@@ -107,7 +107,6 @@ func createDB(dbdir string) (*rocksdb, error) {
 	wo := gorocksdb.NewDefaultWriteOptions()
 	wo.SetSync(true)
 	ro := gorocksdb.NewDefaultReadOptions()
-	ro.SetTotalOrderSeek(true)
 	db, err := gorocksdb.OpenDb(opts, dbdir)
 	if err != nil {
 		return nil, err
@@ -395,9 +394,6 @@ func (d *DiskKV) saveToWriter(db *rocksdb,
 	ss *gorocksdb.Snapshot, w io.Writer) error {
 	ro := gorocksdb.NewDefaultReadOptions()
 	ro.SetSnapshot(ss)
-	ro.SetFillCache(false)
-	ro.SetTotalOrderSeek(true)
-	ro.IgnoreRangeDeletions(true)
 	iter := db.db.NewIterator(ro)
 	defer iter.Close()
 	count := uint64(0)
@@ -410,14 +406,8 @@ func (d *DiskKV) saveToWriter(db *rocksdb,
 		return err
 	}
 	for iter.SeekToFirst(); iter.Valid(); iter.Next() {
-		key, ok := iter.OKey()
-		if !ok {
-			panic("failed to get key")
-		}
-		val, ok := iter.OValue()
-		if !ok {
-			panic("failed to get value")
-		}
+		key := iter.Key()
+		val := iter.Value()
 		dataKv := &KVData{
 			Key: string(key.Data()),
 			Val: string(val.Data()),

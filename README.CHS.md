@@ -8,10 +8,7 @@
 * [示例 1](helloworld) - Hello World
 * [示例 2](helloworld/README.DS.md) - State Machine 状态机
 * [示例 3](multigroup/README.CHS.md) - 多个Raft组
-
-可选 - C++ binding示例:
-
-* [示例 4](cpphelloworld/README.CHS.md) - C++ Hello World
+* [示例 4](ondisk/README.CHS.md) - 基于磁盘的State Machine 状态机
 
 ## 下一步 ##
 * [godoc](https://godoc.org/github.com/lni/dragonboat)

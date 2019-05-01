@@ -13,32 +13,6 @@ const (
 	CompactionStopStyleTotalSize   = UniversalCompactionStopStyle(C.rocksdb_total_size_compaction_stop_style)
 )
 
-type CompactionOptions struct {
-	c *C.rocksdb_compactoptions_t
-}
-
-func NewCompactionOptions() *CompactionOptions {
-	return &CompactionOptions{
-		c: C.rocksdb_compactoptions_create(),
-	}
-}
-
-func (opts *CompactionOptions) Destroy() {
-	C.rocksdb_compactoptions_destroy(opts.c)
-}
-
-func (opts *CompactionOptions) SetExclusiveManualCompaction(value bool) {
-	C.rocksdb_compactoptions_set_exclusive_manual_compaction(opts.c, boolToChar(value))
-}
-
-func (opts *CompactionOptions) SetChangeLevel(value bool) {
-	C.rocksdb_compactoptions_set_change_level(opts.c, boolToChar(value))
-}
-
-func (opts *CompactionOptions) SetTargetLevel(value int) {
-	C.rocksdb_compactoptions_set_target_level(opts.c, C.int(value))
-}
-
 // FIFOCompactionOptions represent all of the available options for
 // FIFO compaction.
 type FIFOCompactionOptions struct {

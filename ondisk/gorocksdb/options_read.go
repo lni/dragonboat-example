@@ -98,10 +98,6 @@ func (opts *ReadOptions) SetIterateUpperBound(key []byte) {
 	C.rocksdb_readoptions_set_iterate_upper_bound(opts.c, cKey, cKeyLen)
 }
 
-func (opts *ReadOptions) SetTotalOrderSeek(value bool) {
-	C.rocksdb_readoptions_set_total_order_seek(opts.c, boolToChar(value))
-}
-
 // SetPinData specifies the value of "pin_data". If true, it keeps the blocks
 // loaded by the iterator pinned in memory as long as the iterator is not deleted,
 // If used when reading from tables created with
@@ -111,6 +107,15 @@ func (opts *ReadOptions) SetTotalOrderSeek(value bool) {
 // Default: false
 func (opts *ReadOptions) SetPinData(value bool) {
 	C.rocksdb_readoptions_set_pin_data(opts.c, boolToChar(value))
+}
+
+// SetReadaheadSize specifies the value of "readahead_size".
+// If non-zero, NewIterator will create a new table reader which
+// performs reads of the given size. Using a large size (> 2MB) can
+// improve the performance of forward iteration on spinning disks.
+// Default: 0
+func (opts *ReadOptions) SetReadaheadSize(value uint64) {
+	C.rocksdb_readoptions_set_readahead_size(opts.c, C.size_t(value))
 }
 
 // Destroy deallocates the ReadOptions object.
