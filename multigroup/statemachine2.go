@@ -20,7 +20,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/lni/dragonboat/statemachine"
+	sm "github.com/lni/dragonboat/statemachine"
 )
 
 // SecondStateMachine is the IStateMachine implementation used in the
@@ -38,7 +38,7 @@ type SecondStateMachine struct {
 
 // NewSecondStateMachine creates and return a new SecondStateMachine object.
 func NewSecondStateMachine(clusterID uint64,
-	nodeID uint64) statemachine.IStateMachine {
+	nodeID uint64) sm.IStateMachine {
 	return &SecondStateMachine{
 		ClusterID: clusterID,
 		NodeID:    nodeID,
@@ -56,34 +56,29 @@ func (s *SecondStateMachine) Lookup(query []byte) []byte {
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *SecondStateMachine) Update(data []byte) uint64 {
+func (s *SecondStateMachine) Update(data []byte) sm.Result {
 	// in this example, we regard the input as a question.
 	s.Count++
 	fmt.Printf("got a question from user: %s, count:%d\n", string(data), s.Count)
-	return uint64(len(data))
+	return sm.Result{Value: uint64(len(data))}
 }
 
 // SaveSnapshot saves the current IStateMachine state into a snapshot using the
 // specified io.Writer object.
 func (s *SecondStateMachine) SaveSnapshot(w io.Writer,
-	fc statemachine.ISnapshotFileCollection,
-	done <-chan struct{}) (uint64, error) {
+	fc sm.ISnapshotFileCollection, done <-chan struct{}) error {
 	// as shown above, the only state that can be saved is the Count variable
 	// there is no external file in this IStateMachine example, we thus leave
 	// the fc untouched
 	data := make([]byte, 8)
 	binary.LittleEndian.PutUint64(data, s.Count)
 	_, err := w.Write(data)
-	if err != nil {
-		return 0, err
-	}
-	return uint64(len(data)), nil
+	return err
 }
 
 // RecoverFromSnapshot recovers the state using the provided snapshot.
 func (s *SecondStateMachine) RecoverFromSnapshot(r io.Reader,
-	files []statemachine.SnapshotFile,
-	done <-chan struct{}) error {
+	files []sm.SnapshotFile, done <-chan struct{}) error {
 	// restore the Count variable, that is the only state we maintain in this
 	// example, the input files is expected to be empty
 	data, err := ioutil.ReadAll(r)

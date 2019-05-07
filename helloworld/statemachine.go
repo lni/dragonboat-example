@@ -20,7 +20,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/lni/dragonboat/statemachine"
+	sm "github.com/lni/dragonboat/statemachine"
 )
 
 // ExampleStateMachine is the IStateMachine implementation used in the
@@ -35,7 +35,7 @@ type ExampleStateMachine struct {
 
 // NewExampleStateMachine creates and return a new ExampleStateMachine object.
 func NewExampleStateMachine(clusterID uint64,
-	nodeID uint64) statemachine.IStateMachine {
+	nodeID uint64) sm.IStateMachine {
 	return &ExampleStateMachine{
 		ClusterID: clusterID,
 		NodeID:    nodeID,
@@ -53,36 +53,32 @@ func (s *ExampleStateMachine) Lookup(query []byte) []byte {
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *ExampleStateMachine) Update(data []byte) uint64 {
+func (s *ExampleStateMachine) Update(data []byte) sm.Result {
 	// in this example, we print out the following hello world message for each
 	// incoming update request. we also increase the counter by one to remember
 	// how many updates we have applied
 	s.Count++
 	fmt.Printf("from ExampleStateMachine.Update(), msg: %s, count:%d\n",
 		string(data), s.Count)
-	return uint64(len(data))
+	return sm.Result{Value: uint64(len(data))}
 }
 
 // SaveSnapshot saves the current IStateMachine state into a snapshot using the
 // specified io.Writer object.
 func (s *ExampleStateMachine) SaveSnapshot(w io.Writer,
-	fc statemachine.ISnapshotFileCollection,
-	done <-chan struct{}) (uint64, error) {
+	fc sm.ISnapshotFileCollection, done <-chan struct{}) error {
 	// as shown above, the only state that can be saved is the Count variable
 	// there is no external file in this IStateMachine example, we thus leave
 	// the fc untouched
 	data := make([]byte, 8)
 	binary.LittleEndian.PutUint64(data, s.Count)
 	_, err := w.Write(data)
-	if err != nil {
-		return 0, err
-	}
-	return uint64(len(data)), nil
+	return err
 }
 
 // RecoverFromSnapshot recovers the state using the provided snapshot.
 func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
-	files []statemachine.SnapshotFile,
+	files []sm.SnapshotFile,
 	done <-chan struct{}) error {
 	// restore the Count variable, that is the only state we maintain in this
 	// example, the input files is expected to be empty

@@ -236,7 +236,10 @@ func main() {
 		RaftAddress: nodeAddr,
 		// RaftRPCFactory: rpc.NewRaftGRPC,
 	}
-	nh := dragonboat.NewNodeHost(nhc)
+	nh, err := dragonboat.NewNodeHost(nhc)
+	if err != nil {
+		panic(err)
+	}
 	if err := nh.StartCluster(peers, *join, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)

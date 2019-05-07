@@ -114,7 +114,10 @@ func main() {
 	}
 	// create a NodeHost instance. it is a facade interface allowing access to
 	// all functionalities provided by dragonboat.
-	nh := dragonboat.NewNodeHost(nhc)
+	nh, err := dragonboat.NewNodeHost(nhc)
+	if err != nil {
+		panic(err)
+	}
 	defer nh.Stop()
 	// start the first cluster
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its

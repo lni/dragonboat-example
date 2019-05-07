@@ -47,7 +47,7 @@ endif
 CGO_LDFLAGS=CGO_LDFLAGS="$(CDEPS_LDFLAGS)"
 GOCMD=$(CGO_LDFLAGS) $(CGO_CXXFLAGS) go build -v
 
-all: helloworld
+all: helloworld multigroup ondisk
 
 helloworld:
 	$(GOCMD) -o example-helloworld github.com/lni/dragonboat-example/helloworld
