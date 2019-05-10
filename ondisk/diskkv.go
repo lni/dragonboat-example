@@ -26,6 +26,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -271,7 +272,7 @@ func (d *DiskKV) queryAppliedIndex(db *rocksdb) (uint64, error) {
 	if len(data) == 0 {
 		return 0, nil
 	}
-	return binary.LittleEndian.Uint64(data), nil
+	return strconv.ParseUint(string(data), 10, 64)
 }
 
 // Open opens the state machine and return the index of the last Raft Log entry
@@ -352,9 +353,8 @@ func (d *DiskKV) Update(ents []sm.Entry) []sm.Entry {
 		wb.Put([]byte(dataKV.Key), []byte(dataKV.Val))
 		ents[idx].Result = sm.Result{Value: uint64(len(ents[idx].Cmd))}
 	}
-	idx := make([]byte, 8)
-	binary.LittleEndian.PutUint64(idx, ents[len(ents)-1].Index)
-	wb.Put([]byte(appliedIndexKey), idx)
+	idx := fmt.Sprintf("%d", ents[len(ents)-1].Index)
+	wb.Put([]byte(appliedIndexKey), []byte(idx))
 	if err := db.db.Write(db.wo, wb); err != nil {
 		panic(err)
 	}
