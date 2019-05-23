@@ -46,21 +46,21 @@ func NewExampleStateMachine(clusterID uint64,
 // Lookup performs local lookup on the ExampleStateMachine instance. In this example,
 // we always return the Count value as a little endian binary encoded byte
 // slice.
-func (s *ExampleStateMachine) Lookup(query []byte) []byte {
+func (s *ExampleStateMachine) Lookup(query []byte) ([]byte, error) {
 	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, s.Count)
-	return result
+	return result, nil
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *ExampleStateMachine) Update(data []byte) sm.Result {
+func (s *ExampleStateMachine) Update(data []byte) (sm.Result, error) {
 	// in this example, we print out the following message for each
 	// incoming update request. we also increase the counter by one to remember
 	// how many updates we have applied
 	s.Count++
 	fmt.Printf("from ExampleStateMachine.Update(), msg: %s, count:%d\n",
 		string(data), s.Count)
-	return sm.Result{Value: uint64(len(data))}
+	return sm.Result{Value: uint64(len(data))}, nil
 }
 
 // SaveSnapshot saves the current IStateMachine state into a snapshot using the
@@ -96,8 +96,8 @@ func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
 func (s *ExampleStateMachine) Close() {}
 
 // GetHash returns a uint64 representing the current object state.
-func (s *ExampleStateMachine) GetHash() uint64 {
+func (s *ExampleStateMachine) GetHash() (uint64, error) {
 	// the only state we have is that Count variable. that uint64 value pretty much
 	// represents the state of this IStateMachine
-	return s.Count
+	return s.Count, nil
 }

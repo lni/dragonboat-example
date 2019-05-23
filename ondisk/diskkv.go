@@ -335,7 +335,7 @@ func (d *DiskKV) Lookup(key []byte) ([]byte, error) {
 // Update updates the state machine. In this example, all updates are put into
 // a RocksDB write batch and then atomically written to the DB together with
 // the index of the last Raft Log entry.
-func (d *DiskKV) Update(ents []sm.Entry) []sm.Entry {
+func (d *DiskKV) Update(ents []sm.Entry) ([]sm.Entry, error) {
 	if d.aborted {
 		panic("update() called after abort set to true")
 	}
@@ -356,13 +356,20 @@ func (d *DiskKV) Update(ents []sm.Entry) []sm.Entry {
 	idx := fmt.Sprintf("%d", ents[len(ents)-1].Index)
 	wb.Put([]byte(appliedIndexKey), []byte(idx))
 	if err := db.db.Write(db.wo, wb); err != nil {
-		panic(err)
+		return nil, err
 	}
 	if d.lastApplied >= ents[len(ents)-1].Index {
 		panic("lastApplied not moving forward")
 	}
 	d.lastApplied = ents[len(ents)-1].Index
-	return ents
+	return ents, nil
+}
+
+// Sync synchronizes all in-core state of the state machine. Since the Update
+// method in this example already does that for every applied entry, Sync is
+// a NoOP here in this example.
+func (d *DiskKV) Sync() error {
+	return nil
 }
 
 type diskKVCtx struct {
@@ -523,15 +530,15 @@ func (d *DiskKV) Close() {
 }
 
 // GetHash returns a hash value representing the state of the state machine.
-func (d *DiskKV) GetHash() uint64 {
+func (d *DiskKV) GetHash() (uint64, error) {
 	h := md5.New()
 	db := (*rocksdb)(atomic.LoadPointer(&d.db))
 	ss := db.db.NewSnapshot()
 	db.mu.RLock()
 	defer db.mu.RUnlock()
 	if err := d.saveToWriter(db, ss, h); err != nil {
-		panic(err)
+		return 0, err
 	}
 	md5sum := h.Sum(nil)
-	return binary.LittleEndian.Uint64(md5sum[:8])
+	return binary.LittleEndian.Uint64(md5sum[:8]), nil
 }
