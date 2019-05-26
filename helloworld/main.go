@@ -276,7 +276,7 @@ func main() {
 				cancel()
 				if err == nil {
 					var count uint64
-					count = binary.LittleEndian.Uint64(result)
+					count = binary.LittleEndian.Uint64(result.([]byte))
 					fmt.Fprintf(os.Stdout, "count: %d\n", count)
 				}
 			case <-raftStopper.ShouldStop():

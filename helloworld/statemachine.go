@@ -46,7 +46,7 @@ func NewExampleStateMachine(clusterID uint64,
 // Lookup performs local lookup on the ExampleStateMachine instance. In this example,
 // we always return the Count value as a little endian binary encoded byte
 // slice.
-func (s *ExampleStateMachine) Lookup(query []byte) ([]byte, error) {
+func (s *ExampleStateMachine) Lookup(query interface{}) (interface{}, error) {
 	result := make([]byte, 8)
 	binary.LittleEndian.PutUint64(result, s.Count)
 	return result, nil
@@ -94,7 +94,7 @@ func (s *ExampleStateMachine) RecoverFromSnapshot(r io.Reader,
 // Close closes the IStateMachine instance. There is nothing for us to cleanup
 // or release as this is a pure in memory data store. Note that the Close
 // method is not guaranteed to be called as node can crash at any time.
-func (s *ExampleStateMachine) Close() {}
+func (s *ExampleStateMachine) Close() error { return nil }
 
 // GetHash returns a uint64 representing the current object state.
 func (s *ExampleStateMachine) GetHash() (uint64, error) {
