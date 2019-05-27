@@ -243,7 +243,7 @@ func cleanupNodeDataDir(dir string) error {
 // DiskKV is a state machine that implements the IOnDiskStateMachine interface.
 // DiskKV stores key-value pairs in the underlying RocksDB key-value store. As
 // it is used as an example, it is implemented using the most basic features
-// common in most key-value stores.
+// common in most key-value stores. This is NOT a benchmark program.
 type DiskKV struct {
 	clusterID   uint64
 	nodeID      uint64
