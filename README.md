@@ -3,6 +3,10 @@ This repo contains examples for [dragonboat](http://github.com/lni/dragonboat).
 
 Please first make sure you have the dragonboat library installed, instructions can be found [here](http://github.com/lni/dragonboat).
 
+## Notice ##
+
+Programs provided here in this repo are examples - they are intentionally created in a more straight forward way to help users to understand the basics of the dragonboat library. They are not benchmark programs.
+
 ## Examples / [中文版](README.CHS.md) ##
 
 * [Example 1](helloworld) - Hello World
