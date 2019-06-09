@@ -3,6 +3,8 @@ This repo contains examples for [dragonboat](http://github.com/lni/dragonboat).
 
 Please first make sure you have the dragonboat library installed, instructions can be found [here](http://github.com/lni/dragonboat).
 
+Please use the release-2.0 branch of this repo for Dragonboat v2.1, use the Master branch of this repo for Dragonboat v3.0 beta (the Master branch of github.com/lni/dragonboat). 
+
 ## Notice ##
 
 Programs provided here in this repo are examples - they are intentionally created in a more straight forward way to help users to understand the basics of the dragonboat library. They are not benchmark programs.
