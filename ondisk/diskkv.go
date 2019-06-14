@@ -334,7 +334,10 @@ func (d *DiskKV) Lookup(key interface{}) (interface{}, error) {
 
 // Update updates the state machine. In this example, all updates are put into
 // a RocksDB write batch and then atomically written to the DB together with
-// the index of the last Raft Log entry.
+// the index of the last Raft Log entry. For simplicity, we always Sync the
+// writes (db.wo.Sync=True). To get higher throughput, you can implement the
+// Sync() method below and choose not to synchronize for every Update(). Sync()
+// will periodically called by Dragonboat to synchronize the state.
 func (d *DiskKV) Update(ents []sm.Entry) ([]sm.Entry, error) {
 	if d.aborted {
 		panic("update() called after abort set to true")
@@ -353,6 +356,7 @@ func (d *DiskKV) Update(ents []sm.Entry) ([]sm.Entry, error) {
 		wb.Put([]byte(dataKV.Key), []byte(dataKV.Val))
 		ents[idx].Result = sm.Result{Value: uint64(len(ents[idx].Cmd))}
 	}
+	// save the applied index to the DB.
 	idx := fmt.Sprintf("%d", ents[len(ents)-1].Index)
 	wb.Put([]byte(appliedIndexKey), []byte(idx))
 	if err := db.db.Write(db.wo, wb); err != nil {
@@ -366,8 +370,8 @@ func (d *DiskKV) Update(ents []sm.Entry) ([]sm.Entry, error) {
 }
 
 // Sync synchronizes all in-core state of the state machine. Since the Update
-// method in this example already does that for every applied entry, Sync is
-// a NoOP here in this example.
+// method in this example already does that every time when it is invoked, the
+// Sync method here is a NoOP.
 func (d *DiskKV) Sync() error {
 	return nil
 }
