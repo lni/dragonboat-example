@@ -1,3 +1,4 @@
+github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/lni/dragonboat/v3 v3.0.0 h1:jx+PWwJCWnDFUqcd4BC81nUoqKVY6gPcaPbXznQEGsA=
 github.com/lni/dragonboat/v3 v3.0.0/go.mod h1:nOYN31Prt3iCfNj2GhWolbjcOByUh2ksVdboPY9pzvg=

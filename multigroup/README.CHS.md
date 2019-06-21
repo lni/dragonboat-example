@@ -6,7 +6,7 @@
 ## 编译 ##
 执行下面的命令以编译示例程序：
 ```
-cd $GOPATH/src/github.com/lni/dragonboat-example
+cd $HOME/src/dragonboat-example
 make multigroup
 ```
 

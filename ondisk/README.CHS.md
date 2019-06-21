@@ -6,7 +6,7 @@
 ## 编译 ##
 用下列命令编译本例的可执行文件 - 
 ```
-cd $GOPATH/src/github.com/lni/dragonboat-example
+cd $HOME/src/dragonboat-example
 make ondisk
 ```
 

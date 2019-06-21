@@ -13,7 +13,7 @@ This example aims to give you an overview of Dragonboat's basic features, such a
 ## Build ##
 To build the helloworld executable -
 ```
-cd $GOPATH/src/github.com/lni/dragonboat-example
+cd $HOME/src/dragonboat-example
 make helloworld
 ```
 On our DEV system, this leads the following go build command to be executed.

@@ -6,7 +6,7 @@ This example aims to give you an overview on how to use multiple raft groups in 
 ## Build ##
 To build the executable -
 ```
-cd $GOPATH/src/github.com/lni/dragonboat-example
+cd $HOME/src/dragonboat-example
 make multigroup
 ```
 

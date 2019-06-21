@@ -1,14 +1,28 @@
 ## 关于 ##
 本repo含[dragonboat](http://github.com/lni/dragonboat)项目的示例程序
 
-请首先确认您已安装了dragonboat库，具体方法请参见[这里](http://github.com/lni/dragonboat)
+本repo的master branch和release-3.0 branch针对dragonboat repo的master branch和各v3.0.x发布版。如您使用dragonboat的v2.1版，请使用本repo的release-2.0 branch。
 
-请使用本repo的release-2.0 branch来尝试dragonboat v2.1，使用本repo的Master branch来尝试dragonboat的v3.0 beta（github.com/lni/dragonboat的Master branch的版本）。
+需Go 1.12或更新的带[Go module](https://github.com/golang/go/wiki/Modules)支持的Go版本。
 
 ## 注意事项 ##
 本repo中的程序均为示例，为了便于向用户展现dragonboat的基本用途，它们被刻意以最简单的方式实现而忽略了基本所有性能考虑。这些示例程序不能用于跑分用途。
 
+## 安装 ##
+假设计划下载例程代码到$HOME/src/dragonboat-example：
+```
+$ cd $HOME/src
+$ git clone https://github.com/lni/dragonboat-example
+```
+编译所有例程：
+```
+$ cd $HOME/src/dragonboat-example
+$ make
+```
+
 ## 示例 ##
+
+点选下列链接以获取具体例程信息。
 
 * [示例 1](helloworld) - Hello World
 * [示例 2](helloworld/README.DS.md) - State Machine 状态机

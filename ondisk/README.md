@@ -6,7 +6,7 @@ This example uses a RocksDB based distributed key-value store to demonstrate the
 ## Build ##
 To build the executable -
 ```
-cd $GOPATH/src/github.com/lni/dragonboat-example
+cd $HOME/src/dragonboat-example
 make ondisk
 ```
 
