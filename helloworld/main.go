@@ -33,10 +33,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lni/dragonboat"
-	"github.com/lni/dragonboat-example/utils"
-	"github.com/lni/dragonboat/config"
-	"github.com/lni/dragonboat/logger"
+	"github.com/lni/dragonboat-example/v3/utils"
+	"github.com/lni/dragonboat/v3"
+	"github.com/lni/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v3/logger"
 )
 
 const (

@@ -50,13 +50,13 @@ GOCMD=$(CGO_LDFLAGS) $(CGO_CXXFLAGS) go build -v
 all: helloworld multigroup ondisk
 
 helloworld:
-	$(GOCMD) -o example-helloworld github.com/lni/dragonboat-example/helloworld
+	$(GOCMD) -o example-helloworld github.com/lni/dragonboat-example/v3/helloworld
 
 multigroup:
-	$(GOCMD) -o example-multigroup github.com/lni/dragonboat-example/multigroup
+	$(GOCMD) -o example-multigroup github.com/lni/dragonboat-example/v3/multigroup
 
 ondisk:
-	$(GOCMD) -o example-ondisk github.com/lni/dragonboat-example/ondisk
+	$(GOCMD) -o example-ondisk github.com/lni/dragonboat-example/v3/ondisk
 
 clean:
 	@rm -f example-helloworld example-multigroup example-ondisk

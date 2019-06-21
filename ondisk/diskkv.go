@@ -32,9 +32,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/lni/dragonboat-example/ondisk/gorocksdb"
-	"github.com/lni/dragonboat-example/utils"
-	sm "github.com/lni/dragonboat/statemachine"
+	"github.com/lni/dragonboat-example/v3/ondisk/gorocksdb"
+	"github.com/lni/dragonboat-example/v3/utils"
+	sm "github.com/lni/dragonboat/v3/statemachine"
 )
 
 const (
