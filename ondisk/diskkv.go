@@ -33,8 +33,8 @@ import (
 	"unsafe"
 
 	"github.com/lni/dragonboat-example/v3/ondisk/gorocksdb"
-	"github.com/lni/dragonboat-example/v3/utils"
 	sm "github.com/lni/dragonboat/v3/statemachine"
+	"github.com/lni/goutils/fileutil"
 )
 
 const (
@@ -147,7 +147,7 @@ func replaceCurrentDBFile(dir string) error {
 	if err := os.Rename(tmpFp, fp); err != nil {
 		return err
 	}
-	return utils.SyncDir(dir)
+	return fileutil.SyncDir(dir)
 }
 
 func saveCurrentDBDirName(dir string, dbdir string) error {
@@ -164,7 +164,7 @@ func saveCurrentDBDirName(dir string, dbdir string) error {
 		if err := f.Close(); err != nil {
 			panic(err)
 		}
-		if err := utils.SyncDir(dir); err != nil {
+		if err := fileutil.SyncDir(dir); err != nil {
 			panic(err)
 		}
 	}()

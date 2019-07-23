@@ -31,10 +31,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lni/dragonboat-example/v3/utils"
 	"github.com/lni/dragonboat/v3"
 	"github.com/lni/dragonboat/v3/config"
 	"github.com/lni/dragonboat/v3/logger"
+	"github.com/lni/goutils/syncutil"
 )
 
 const (
@@ -134,8 +134,8 @@ func main() {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
-	raftStopper := utils.NewStopper()
-	consoleStopper := utils.NewStopper()
+	raftStopper := syncutil.NewStopper()
+	consoleStopper := syncutil.NewStopper()
 	ch := make(chan string, 16)
 	consoleStopper.RunWorker(func() {
 		reader := bufio.NewReader(os.Stdin)
