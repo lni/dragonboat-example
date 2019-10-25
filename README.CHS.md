@@ -3,7 +3,7 @@
 
 本repo的master branch和release-3.1 branch针对dragonboat repo的master branch和各v3.1.x发布版。如您使用dragonboat的v2.1版，请使用本repo的release-2.0 branch。
 
-需Go 1.12或更新的带[Go module](https://github.com/golang/go/wiki/Modules)支持的Go版本。
+需Go 1.13或更新的带[Go module](https://github.com/golang/go/wiki/Modules)支持的Go版本。
 
 ## 注意事项 ##
 本repo中的程序均为示例，为了便于向用户展现dragonboat的基本用途，它们被刻意以最简单的方式实现而忽略了基本所有性能考虑。这些示例程序不能用于跑分用途。
