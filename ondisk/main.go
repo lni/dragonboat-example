@@ -93,17 +93,17 @@ func main() {
 	if runtime.GOOS == "darwin" {
 		signal.Ignore(syscall.Signal(0xd))
 	}
-	peers := make(map[uint64]string)
+	initialMembers := make(map[uint64]string)
 	if !*join {
 		for idx, v := range addresses {
-			peers[uint64(idx+1)] = v
+			initialMembers[uint64(idx+1)] = v
 		}
 	}
 	var nodeAddr string
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
-		nodeAddr = peers[uint64(*nodeID)]
+		nodeAddr = initialMembers[uint64(*nodeID)]
 	}
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -133,7 +133,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := nh.StartOnDiskCluster(peers, *join, NewDiskKV, rc); err != nil {
+	if err := nh.StartOnDiskCluster(initialMembers, *join, NewDiskKV, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}

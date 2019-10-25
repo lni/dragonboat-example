@@ -65,13 +65,13 @@ func main() {
 	if runtime.GOOS == "darwin" {
 		signal.Ignore(syscall.Signal(0xd))
 	}
-	peers := make(map[uint64]string)
+	initialMembers := make(map[uint64]string)
 	for idx, v := range addresses {
 		// key is the NodeID, NodeID is not allowed to be 0
 		// value is the raft address
-		peers[uint64(idx+1)] = v
+		initialMembers[uint64(idx+1)] = v
 	}
-	nodeAddr := peers[uint64(*nodeID)]
+	nodeAddr := initialMembers[uint64(*nodeID)]
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -123,14 +123,14 @@ func main() {
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its
 	// behaviour is identical to the one used in the Hello World example.
 	rc.ClusterID = clusterID1
-	if err := nh.StartCluster(peers, false, NewExampleStateMachine, rc); err != nil {
+	if err := nh.StartCluster(initialMembers, false, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
 	// start the second cluster
 	// we use SecondStateMachine as the IStateMachine for the second cluster
 	rc.ClusterID = clusterID2
-	if err := nh.StartCluster(peers, false, NewSecondStateMachine, rc); err != nil {
+	if err := nh.StartCluster(initialMembers, false, NewSecondStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}

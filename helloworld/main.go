@@ -45,6 +45,7 @@ const (
 
 var (
 	// initial nodes count is fixed to three, their addresses are also fixed
+	// these are the initial member nodes of the Raft cluster.
 	addresses = []string{
 		"localhost:63001",
 		"localhost:63002",
@@ -123,14 +124,17 @@ func main() {
 	if runtime.GOOS == "darwin" {
 		signal.Ignore(syscall.Signal(0xd))
 	}
-	peers := make(map[uint64]string)
-	// when joining a new node which is not an initial members, the peers map should
-	// be empty.
+	initialMembers := make(map[uint64]string)
+	// when joining a new node which is not an initial members, the initialMembers
+	// map should be empty.
+	// when restarting a node that is not a member of the initial nodes, you can
+	// leave the initialMembers to be empty. we still populate the initialMembers
+	// here for simplicity.
 	if !*join {
 		for idx, v := range addresses {
 			// key is the NodeID, NodeID is not allowed to be 0
 			// value is the raft address
-			peers[uint64(idx+1)] = v
+			initialMembers[uint64(idx+1)] = v
 		}
 	}
 	var nodeAddr string
@@ -140,7 +144,7 @@ func main() {
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
-		nodeAddr = peers[uint64(*nodeID)]
+		nodeAddr = initialMembers[uint64(*nodeID)]
 	}
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
@@ -194,13 +198,6 @@ func main() {
 	// TLS Authentication, set the MutualTLS field in NodeHostConfig to true, set
 	// the CAFile, CertFile and KeyFile fields to point to the path of your CA
 	// file, certificate and key files.
-	// by default, TCP based RPC module is used, set the RaftRPCFactory field in
-	// NodeHostConfig to rpc.NewRaftGRPC (github.com/lni/dragonboat/plugin/rpc) to
-	// use gRPC based transport. To use gRPC based RPC module, you need to install
-	// the gRPC library first -
-	//
-	// $ go get -u google.golang.org/grpc
-	//
 	nhc := config.NodeHostConfig{
 		// WALDir is the directory to store the WAL of all Raft Logs. It is
 		// recommended to use Enterprise SSDs with good fsync() performance
@@ -234,13 +231,12 @@ func main() {
 		RTTMillisecond: 200,
 		// RaftAddress is used to identify the NodeHost instance
 		RaftAddress: nodeAddr,
-		// RaftRPCFactory: rpc.NewRaftGRPC,
 	}
 	nh, err := dragonboat.NewNodeHost(nhc)
 	if err != nil {
 		panic(err)
 	}
-	if err := nh.StartCluster(peers, *join, NewExampleStateMachine, rc); err != nil {
+	if err := nh.StartCluster(initialMembers, *join, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
