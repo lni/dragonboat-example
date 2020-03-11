@@ -26,6 +26,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -34,7 +35,6 @@ import (
 
 	"github.com/lni/dragonboat-example/v3/ondisk/gorocksdb"
 	sm "github.com/lni/dragonboat/v3/statemachine"
-	"github.com/lni/goutils/fileutil"
 )
 
 const (
@@ -43,6 +43,29 @@ const (
 	currentDBFilename  string = "current"
 	updatingDBFilename string = "current.updating"
 )
+
+func syncDir(dir string) (err error) {
+	if runtime.GOOS == "windows" {
+		return nil
+	}
+	fileInfo, err := os.Stat(dir)
+	if err != nil {
+		return err
+	}
+	if !fileInfo.IsDir() {
+		panic("not a dir")
+	}
+	df, err := os.Open(filepath.Clean(dir))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if cerr := df.Close(); err == nil {
+			err = cerr
+		}
+	}()
+	return df.Sync()
+}
 
 type KVData struct {
 	Key string
@@ -147,7 +170,7 @@ func replaceCurrentDBFile(dir string) error {
 	if err := os.Rename(tmpFp, fp); err != nil {
 		return err
 	}
-	return fileutil.SyncDir(dir)
+	return syncDir(dir)
 }
 
 func saveCurrentDBDirName(dir string, dbdir string) error {
@@ -164,7 +187,7 @@ func saveCurrentDBDirName(dir string, dbdir string) error {
 		if err := f.Close(); err != nil {
 			panic(err)
 		}
-		if err := fileutil.SyncDir(dir); err != nil {
+		if err := syncDir(dir); err != nil {
 			panic(err)
 		}
 	}()
@@ -211,7 +234,10 @@ func getCurrentDBDirName(dir string) (string, error) {
 }
 
 func createNodeDataDir(dir string) error {
-	return os.MkdirAll(dir, 0755)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+	return syncDir(filepath.Dir(dir))
 }
 
 func cleanupNodeDataDir(dir string) error {
