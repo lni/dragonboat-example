@@ -1,7 +1,7 @@
 ## About / [中文版](README.CHS.md) ##
 This repo contains examples for [dragonboat](http://github.com/lni/dragonboat).
 
-The master branch and the release-3.1 branch of this repo target Dragonboat's master and v3.1.x releases. Use the release-2.0 branch of this repo if you plan to use Dragonboat v2.1.  
+The master branch and the release-3.2 branch of this repo target Dragonboat's master and v3.2.x releases. Use the release-2.0 branch of this repo if you plan to use Dragonboat v2.1.  
 
 Go 1.13 or later releases with [Go module](https://github.com/golang/go/wiki/Modules) support is required.
 
