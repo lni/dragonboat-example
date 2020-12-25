@@ -51,7 +51,7 @@ Each helloworld process has a background goroutine performing linearizable read 
 ## Quorum ##
 As long as the majority of nodes in the Raft cluster are available, the cluster is said to has the quorum. For such a 3-nodes Raft cluster, any two nodes need to be available to have the quorum.
 
-Now press CTRL+C in any one of the terminal to stop the running exmple-helloworld program. Type in some messsages again in any of the remaining two terminals, you should still be able to have the message replicated across to the other node as the Raft cluster still has the quorum. Let's press CTRL+C to stop another instance, you should notice that further input messages will no longer be printed back on the remaining terminal and you are expected to see a timeout message. 
+Now press CTRL+C in any one of the terminal to stop the running exmple-helloworld program. Type in some messages again in any of the remaining two terminals, you should still be able to have the message replicated across to the other node as the Raft cluster still has the quorum. Let's press CTRL+C to stop another instance, you should notice that further input messages will no longer be printed back on the remaining terminal and you are expected to see a timeout message. 
 
 ```
 failed to get a proposal session, timeout
@@ -67,10 +67,10 @@ Let's pick a stopped instance and restart it using the exact same command, e.g. 
 Previously replicated messages are printed back onto the terminal again in the same order as they were initially replicated across. Dragonboat internally records the state of the node and all updates to make sure it can be correctly restored after restart. 
 
 ## Snapshotting ##
-After proposing several more messages, there will be logs mentioning that "snapshot captured". This is controled by the SnapshotEntries parameter specified in the raft.Config object. Snapshots can be used to restore the state of the program without requiring every single proposed messages to be applied one by one.
+After proposing several more messages, there will be logs mentioning that "snapshot captured". This is controlled by the SnapshotEntries parameter specified in the raft.Config object. Snapshots can be used to restore the state of the program without requiring every single proposed messages to be applied one by one.
 
 ## Membership Change ##
-In this example program, Raft cluster membership can be changed by inputing some messages with special format. The following special message causes a new node with node ID 4 running at localhost:63100 to be added to the Raft cluster.
+In this example program, Raft cluster membership can be changed by inputting some messages with special format. The following special message causes a new node with node ID 4 running at localhost:63100 to be added to the Raft cluster.
 
 ```
 add localhost:63100 4
