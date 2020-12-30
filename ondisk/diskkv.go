@@ -27,8 +27,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sort"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -446,25 +444,14 @@ func (d *DiskKV) saveToWriter(db *pebbledb,
 	ss *pebble.Snapshot, w io.Writer) error {
 	iter := ss.NewIter(db.ro)
 	defer iter.Close()
-	var dataMap sync.Map
 	values := make([]*KVData, 0)
 	for iter.First(); iteratorIsValid(iter); iter.Next() {
-		key := iter.Key()
-		val := iter.Value()
-		dataMap.Store(string(key), string(val))
-	}
-	toList := func(k, v interface{}) bool {
 		kv := &KVData{
-			Key: k.(string),
-			Val: v.(string),
+			Key: string(iter.Key()),
+			Val: string(iter.Value()),
 		}
 		values = append(values, kv)
-		return true
 	}
-	dataMap.Range(toList)
-	sort.Slice(values, func(i, j int) bool {
-		return strings.Compare(values[i].Key, values[j].Key) < 0
-	})
 	count := uint64(len(values))
 	sz := make([]byte, 8)
 	binary.LittleEndian.PutUint64(sz, count)
@@ -591,18 +578,4 @@ func (d *DiskKV) Close() error {
 		}
 	}
 	return nil
-}
-
-// GetHash returns a hash value representing the state of the state machine.
-func (d *DiskKV) GetHash() (uint64, error) {
-	h := md5.New()
-	db := (*pebbledb)(atomic.LoadPointer(&d.db))
-	ss := db.db.NewSnapshot()
-	db.mu.RLock()
-	defer db.mu.RUnlock()
-	if err := d.saveToWriter(db, ss, h); err != nil {
-		return 0, err
-	}
-	md5sum := h.Sum(nil)
-	return binary.LittleEndian.Uint64(md5sum[:8]), nil
 }

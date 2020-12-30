@@ -94,10 +94,3 @@ func (s *SecondStateMachine) RecoverFromSnapshot(r io.Reader,
 // or release as this is a pure in memory data store. Note that the Close
 // method is not guaranteed to be called as node can crash at any time.
 func (s *SecondStateMachine) Close() error { return nil }
-
-// GetHash returns a uint64 representing the current object state.
-func (s *SecondStateMachine) GetHash() (uint64, error) {
-	// the only state we have is that Count variable. that uint64 value pretty much
-	// represents the state of this IStateMachine
-	return s.Count, nil
-}
