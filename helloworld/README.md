@@ -16,13 +16,6 @@ To build the helloworld executable -
 cd $HOME/src/dragonboat-example
 make helloworld
 ```
-On our DEV system, this leads the following go build command to be executed.
-
-Note the CGO_LDFLAGS variable passed to the go build command, it is used to inform the go tool where to locate the RocksDB library when linking. Depends on your RocksDB installation, you might also need to use CGO_CFLAGS to specify where to locate RocksDB headers, e.g. CGO_CFLAGS="-I/home/xyz/local/include" if the headers are installed at /home/xyz/local/include.
-
-```
-CGO_LDFLAGS="-L/usr/local/lib -lrocksdb"  go build -v -o example-helloworld github.com/lni/dragonboat-example/helloworld
-```
 
 ## First Run ##
 Start three instances of the helloworld program on the same machine in three different terminals:

@@ -16,10 +16,6 @@
 cd $HOME/src/dragonboat-example
 make helloworld
 ```
-在我们所使用的开发系统中，上述make命令会调用如下的go build命令。请注意其中的CGO_LDFLAGS变量，它用来向go build工具提供RocksDB的库文件位置信息。取决于您的RocksDB具体安装位置，当编译您自己的dragonboat应用程序时，您可能也需要CGO_CFLAGS来向go build提供RocksDB头文件位置的信息，比如您可以使用CGO_CFLAGS="-I/home/xyz/local/include"，如果RocksDB的头文件是安装于/home/xyz/local/include。
-```
-CGO_LDFLAGS="-L/usr/local/lib -lrocksdb" go build -v -tags=" " -o example-helloworld github.com/lni/dragonboat-example/helloworld
-```
 
 ## 首次运行 ##
 在同一主机上三个不同的终端terminals上启动三个helloworld进程：

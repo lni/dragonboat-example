@@ -148,7 +148,7 @@ func createDB(dbdir string) (*pebbledb, error) {
 	}, nil
 }
 
-// functions below are used to manage the current data directory of RocksDB DB.
+// functions below are used to manage the current data directory of Pebble DB.
 func isNewRun(dir string) bool {
 	fp := filepath.Join(dir, currentDBFilename)
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
@@ -420,7 +420,7 @@ type diskKVCtx struct {
 
 // PrepareSnapshot prepares snapshotting. PrepareSnapshot is responsible to
 // capture a state identifier that identifies a point in time state of the
-// underlying data. In this example, we use RocksDB's snapshot feature to
+// underlying data. In this example, we use Pebble's snapshot feature to
 // achieve that.
 func (d *DiskKV) PrepareSnapshot() (interface{}, error) {
 	if d.closed {
