@@ -29,8 +29,6 @@ $ make
 * [示例 3](multigroup/README.CHS.md) - 多个Raft组
 * [示例 4](ondisk/README.CHS.md) - 基于磁盘的State Machine 状态机
 
-如何在您的C++项目中使用Dragonboat的示例程序[在此](https://github.com/JasonYuchen/dragonboat-cpp-example)，感谢[Jason Yuchen](https://github.com/JasonYuchen)提供这些示例。
-
 ## 下一步 ##
 * [godoc](https://godoc.org/github.com/lni/dragonboat)
 * 为[dragonboat](http://github.com/lni/dragonboat)项目贡献代码或报告bug！

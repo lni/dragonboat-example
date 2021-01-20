@@ -31,8 +31,6 @@ Click links below for more details.
 * [Example 3](multigroup) - Multiple Raft Groups
 * [Example 4](ondisk) - On Disk State Machine
 
-Examples on how to use Dragonboat in your C++ projects can be found [here](https://github.com/JasonYuchen/dragonboat-cpp-example). Thanks for [Jason Yuchen](https://github.com/JasonYuchen) for providing those examples.
-
 ## Next Step ##
 * [godoc](https://godoc.org/github.com/lni/dragonboat)
 * Contribute code or report bugs for [dragonboat](http://github.com/lni/dragonboat)
