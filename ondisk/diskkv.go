@@ -392,8 +392,9 @@ func (d *DiskKV) Update(ents []sm.Entry) ([]sm.Entry, error) {
 		ents[idx].Result = sm.Result{Value: uint64(len(ents[idx].Cmd))}
 	}
 	// save the applied index to the DB.
-	idx := fmt.Sprintf("%d", ents[len(ents)-1].Index)
-	wb.Set([]byte(appliedIndexKey), []byte(idx), db.wo)
+	appliedIndex := make([]byte, 8)
+	binary.LittleEndian.PutUint64(appliedIndex, ents[len(ents)-1].Index)
+	wb.Set([]byte(appliedIndexKey), appliedIndex, db.wo)
 	if err := db.db.Apply(wb, db.syncwo); err != nil {
 		return nil, err
 	}
