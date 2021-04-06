@@ -14,7 +14,7 @@
 
 GOCMD=go build -v
 
-all: helloworld multigroup ondisk
+all: helloworld multigroup ondisk optimistic-write-lock
 
 helloworld:
 	$(GOCMD) -o example-helloworld github.com/lni/dragonboat-example/v3/helloworld
@@ -25,7 +25,10 @@ multigroup:
 ondisk:
 	$(GOCMD) -o example-ondisk github.com/lni/dragonboat-example/v3/ondisk
 
-clean:
-	@rm -f example-helloworld example-multigroup example-ondisk
+optimistic-write-lock:
+	$(GOCMD) -o example-optimistic-write-lock github.com/lni/dragonboat-example/v3/optimistic-write-lock
 
-.PHONY: helloworld multigroup ondisk clean
+clean:
+	@rm -f example-helloworld example-multigroup example-ondisk example-optimistic-write-lock
+
+.PHONY: helloworld multigroup ondisk optimistic-write-lock clean
