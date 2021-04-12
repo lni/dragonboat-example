@@ -30,6 +30,7 @@ Click links below for more details.
 * [Example 2](helloworld/README.DS.md) - State Machine
 * [Example 3](multigroup) - Multiple Raft Groups
 * [Example 4](ondisk) - On Disk State Machine
+* [Example 5](optimistic-write-lock) - Optimistic Write Lock
 
 ## Next Step ##
 * [godoc](https://godoc.org/github.com/lni/dragonboat)

@@ -2,6 +2,7 @@ example-data
 /example-helloworld
 /example-multigroup
 /example-ondisk
+/example-optimistic-write-lock
 cpphelloworld/cpphelloworld
 *.o
 *.so
