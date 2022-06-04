@@ -26,18 +26,18 @@ type Entry struct {
 }
 
 func NewLinearizableFSM() dbsm.CreateConcurrentStateMachineFunc {
-	return dbsm.CreateConcurrentStateMachineFunc(func(clusterID, vnodeID uint64) dbsm.IConcurrentStateMachine {
+	return dbsm.CreateConcurrentStateMachineFunc(func(shardID, replicaID uint64) dbsm.IConcurrentStateMachine {
 		return &linearizableFSM{
-			clusterID: clusterID,
-			vnodeID:   vnodeID,
+			shardID:   shardID,
+			replicaID: replicaID,
 			data:      map[string]interface{}{},
 		}
 	})
 }
 
 type linearizableFSM struct {
-	clusterID uint64
-	vnodeID   uint64
+	shardID   uint64
+	replicaID uint64
 	data      map[string]interface{}
 }
 

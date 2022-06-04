@@ -37,7 +37,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		query := Query{
 			Key: r.URL.Path,
 		}
-		res, err := h.nh.SyncRead(ctx, clusterID, query)
+		res, err := h.nh.SyncRead(ctx, shardID, query)
 		if err != nil {
 			w.WriteHeader(500)
 			w.Write([]byte(err.Error()))
@@ -72,7 +72,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(err.Error()))
 			return
 		}
-		res, err := h.nh.SyncPropose(ctx, h.nh.GetNoOPSession(clusterID), b)
+		res, err := h.nh.SyncPropose(ctx, h.nh.GetNoOPSession(shardID), b)
 		if err != nil {
 			w.WriteHeader(500)
 			w.Write([]byte(err.Error()))

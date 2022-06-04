@@ -41,7 +41,7 @@ var (
 		":8002",
 		":8003",
 	}
-	clusterID uint64 = 128
+	shardID uint64 = 128
 )
 
 func main() {
@@ -64,8 +64,8 @@ func main() {
 		}
 		fsm := NewLinearizableFSM()
 		err = nh.StartConcurrentCluster(members, false, fsm, config.Config{
-			NodeID:             uint64(i),
-			ClusterID:          clusterID,
+			ReplicaID:          uint64(i),
+			ShardID:            shardID,
 			ElectionRTT:        10,
 			HeartbeatRTT:       1,
 			CheckQuorum:        true,
