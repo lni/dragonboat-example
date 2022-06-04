@@ -25,8 +25,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/config"
+	"github.com/lni/dragonboat/v4"
+	"github.com/lni/dragonboat/v4/config"
 )
 
 var (
@@ -63,7 +63,7 @@ func main() {
 			panic(err)
 		}
 		fsm := NewLinearizableFSM()
-		err = nh.StartConcurrentCluster(members, false, fsm, config.Config{
+		err = nh.StartConcurrentReplica(members, false, fsm, config.Config{
 			ReplicaID:          uint64(i),
 			ShardID:            shardID,
 			ElectionRTT:        10,

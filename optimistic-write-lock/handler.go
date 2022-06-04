@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/lni/dragonboat/v3"
+	"github.com/lni/dragonboat/v4"
 )
 
 type handler struct {

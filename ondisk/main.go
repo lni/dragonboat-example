@@ -31,9 +31,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/logger"
+	"github.com/lni/dragonboat/v4"
+	"github.com/lni/dragonboat/v4/config"
+	"github.com/lni/dragonboat/v4/logger"
 	"github.com/lni/goutils/syncutil"
 )
 
@@ -133,7 +133,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := nh.StartOnDiskCluster(initialMembers, *join, NewDiskKV, rc); err != nil {
+	if err := nh.StartOnDiskReplica(initialMembers, *join, NewDiskKV, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
@@ -150,7 +150,7 @@ func main() {
 			}
 			if s == "exit\n" {
 				raftStopper.Stop()
-				nh.Stop()
+				nh.Close()
 				return
 			}
 			ch <- s

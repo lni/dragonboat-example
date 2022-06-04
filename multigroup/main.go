@@ -31,9 +31,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/logger"
+	"github.com/lni/dragonboat/v4"
+	"github.com/lni/dragonboat/v4/config"
+	"github.com/lni/dragonboat/v4/logger"
 	"github.com/lni/goutils/syncutil"
 )
 
@@ -118,19 +118,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer nh.Stop()
+	defer nh.Close()
 	// start the first cluster
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its
 	// behaviour is identical to the one used in the Hello World example.
 	rc.ShardID = shardID1
-	if err := nh.StartCluster(initialMembers, false, NewExampleStateMachine, rc); err != nil {
+	if err := nh.StartReplica(initialMembers, false, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
 	// start the second cluster
 	// we use SecondStateMachine as the IStateMachine for the second cluster
 	rc.ShardID = shardID2
-	if err := nh.StartCluster(initialMembers, false, NewSecondStateMachine, rc); err != nil {
+	if err := nh.StartReplica(initialMembers, false, NewSecondStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
@@ -148,7 +148,7 @@ func main() {
 			if s == "exit\n" {
 				raftStopper.Stop()
 				// no data will be lost/corrupted if nodehost.Stop() is not called
-				nh.Stop()
+				nh.Close()
 				return
 			}
 			ch <- s

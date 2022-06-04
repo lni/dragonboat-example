@@ -20,7 +20,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	sm "github.com/lni/dragonboat/v3/statemachine"
+	sm "github.com/lni/dragonboat/v4/statemachine"
 )
 
 // ExampleStateMachine is the IStateMachine implementation used in the
@@ -28,17 +28,17 @@ import (
 // See https://github.com/lni/dragonboat/blob/master/statemachine/rsm.go for
 // more details of the IStateMachine interface.
 type ExampleStateMachine struct {
-	ClusterID uint64
-	NodeID    uint64
+	ShardID   uint64
+	ReplicaID uint64
 	Count     uint64
 }
 
 // NewExampleStateMachine creates and return a new ExampleStateMachine object.
-func NewExampleStateMachine(clusterID uint64,
-	nodeID uint64) sm.IStateMachine {
+func NewExampleStateMachine(shardID uint64,
+	replicaID uint64) sm.IStateMachine {
 	return &ExampleStateMachine{
-		ClusterID: clusterID,
-		NodeID:    nodeID,
+		ShardID:   shardID,
+		ReplicaID: replicaID,
 		Count:     0,
 	}
 }
@@ -53,14 +53,14 @@ func (s *ExampleStateMachine) Lookup(query interface{}) (interface{}, error) {
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *ExampleStateMachine) Update(data []byte) (sm.Result, error) {
+func (s *ExampleStateMachine) Update(e sm.Entry) (sm.Result, error) {
 	// in this example, we print out the following hello world message for each
 	// incoming update request. we also increase the counter by one to remember
 	// how many updates we have applied
 	s.Count++
 	fmt.Printf("from ExampleStateMachine.Update(), msg: %s, count:%d\n",
-		string(data), s.Count)
-	return sm.Result{Value: uint64(len(data))}, nil
+		string(e.Cmd), s.Count)
+	return sm.Result{Value: uint64(len(e.Cmd))}, nil
 }
 
 // SaveSnapshot saves the current IStateMachine state into a snapshot using the

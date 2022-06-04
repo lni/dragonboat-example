@@ -33,9 +33,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/lni/dragonboat/v3"
-	"github.com/lni/dragonboat/v3/config"
-	"github.com/lni/dragonboat/v3/logger"
+	"github.com/lni/dragonboat/v4"
+	"github.com/lni/dragonboat/v4/config"
+	"github.com/lni/dragonboat/v4/logger"
 	"github.com/lni/goutils/syncutil"
 )
 
@@ -61,9 +61,9 @@ func makeMembershipChange(nh *dragonboat.NodeHost,
 	var err error
 	if cmd == "add" {
 		// orderID is ignored in standalone mode
-		rs, err = nh.RequestAddNode(exampleShardID, replicaID, addr, 0, 3*time.Second)
+		rs, err = nh.RequestAddReplica(exampleShardID, replicaID, addr, 0, 3*time.Second)
 	} else if cmd == "remove" {
-		rs, err = nh.RequestDeleteNode(exampleShardID, replicaID, 0, 3*time.Second)
+		rs, err = nh.RequestDeleteReplica(exampleShardID, replicaID, 0, 3*time.Second)
 	} else {
 		panic("unknown cmd")
 	}
@@ -236,7 +236,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := nh.StartCluster(initialMembers, *join, NewExampleStateMachine, rc); err != nil {
+	if err := nh.StartReplica(initialMembers, *join, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
@@ -254,7 +254,7 @@ func main() {
 			if s == "exit\n" {
 				raftStopper.Stop()
 				// no data will be lost/corrupted if nodehost.Stop() is not called
-				nh.Stop()
+				nh.Close()
 				return
 			}
 			ch <- s

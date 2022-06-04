@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	dbsm "github.com/lni/dragonboat/v3/statemachine"
+	dbsm "github.com/lni/dragonboat/v4/statemachine"
 )
 
 const (

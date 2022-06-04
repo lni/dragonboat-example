@@ -34,7 +34,7 @@ import (
 
 	"github.com/cockroachdb/pebble"
 
-	sm "github.com/lni/dragonboat/v3/statemachine"
+	sm "github.com/lni/dragonboat/v4/statemachine"
 )
 
 const (

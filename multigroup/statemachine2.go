@@ -20,7 +20,7 @@ import (
 	"io"
 	"io/ioutil"
 
-	sm "github.com/lni/dragonboat/v3/statemachine"
+	sm "github.com/lni/dragonboat/v4/statemachine"
 )
 
 // SecondStateMachine is the IStateMachine implementation used in the
@@ -31,17 +31,16 @@ import (
 // The biggest difference is that its Update() method has different print
 // out messages. See Update() for details.
 type SecondStateMachine struct {
-	ClusterID uint64
-	NodeID    uint64
+	ShardID   uint64
+	ReplicaID uint64
 	Count     uint64
 }
 
 // NewSecondStateMachine creates and return a new SecondStateMachine object.
-func NewSecondStateMachine(clusterID uint64,
-	nodeID uint64) sm.IStateMachine {
+func NewSecondStateMachine(shardID uint64, replicaID uint64) sm.IStateMachine {
 	return &SecondStateMachine{
-		ClusterID: clusterID,
-		NodeID:    nodeID,
+		ShardID:   shardID,
+		ReplicaID: replicaID,
 		Count:     0,
 	}
 }
@@ -56,11 +55,11 @@ func (s *SecondStateMachine) Lookup(query interface{}) (interface{}, error) {
 }
 
 // Update updates the object using the specified committed raft entry.
-func (s *SecondStateMachine) Update(data []byte) (sm.Result, error) {
+func (s *SecondStateMachine) Update(e sm.Entry) (sm.Result, error) {
 	// in this example, we regard the input as a question.
 	s.Count++
-	fmt.Printf("got a question from user: %s, count:%d\n", string(data), s.Count)
-	return sm.Result{Value: uint64(len(data))}, nil
+	fmt.Printf("got a question from user: %s, count:%d\n", string(e.Cmd), s.Count)
+	return sm.Result{Value: uint64(len(e.Cmd))}, nil
 }
 
 // SaveSnapshot saves the current IStateMachine state into a snapshot using the
