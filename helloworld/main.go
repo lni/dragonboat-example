@@ -40,7 +40,7 @@ import (
 )
 
 const (
-	exampleClusterID uint64 = 128
+	exampleShardID uint64 = 128
 )
 
 var (
@@ -56,14 +56,14 @@ var (
 
 // makeMembershipChange makes membership change request.
 func makeMembershipChange(nh *dragonboat.NodeHost,
-	cmd string, addr string, nodeID uint64) {
+	cmd string, addr string, replicaID uint64) {
 	var rs *dragonboat.RequestState
 	var err error
 	if cmd == "add" {
 		// orderID is ignored in standalone mode
-		rs, err = nh.RequestAddNode(exampleClusterID, nodeID, addr, 0, 3*time.Second)
+		rs, err = nh.RequestAddNode(exampleShardID, replicaID, addr, 0, 3*time.Second)
 	} else if cmd == "remove" {
-		rs, err = nh.RequestDeleteNode(exampleClusterID, nodeID, 0, 3*time.Second)
+		rs, err = nh.RequestDeleteNode(exampleShardID, replicaID, 0, 3*time.Second)
 	} else {
 		panic("unknown cmd")
 	}
@@ -94,29 +94,29 @@ func splitMembershipChangeCmd(v string) (string, string, uint64, error) {
 			return "", "", 0, errNotMembershipChange
 		}
 		addr := ""
-		var nodeIDStr string
-		var nodeID uint64
+		var replicaIDStr string
+		var replicaID uint64
 		var err error
 		if cmd == "add" {
 			addr = strings.TrimSpace(parts[1])
-			nodeIDStr = strings.TrimSpace(parts[2])
+			replicaIDStr = strings.TrimSpace(parts[2])
 		} else {
-			nodeIDStr = strings.TrimSpace(parts[1])
+			replicaIDStr = strings.TrimSpace(parts[1])
 		}
-		if nodeID, err = strconv.ParseUint(nodeIDStr, 10, 64); err != nil {
+		if replicaID, err = strconv.ParseUint(replicaIDStr, 10, 64); err != nil {
 			return "", "", 0, errNotMembershipChange
 		}
-		return cmd, addr, nodeID, nil
+		return cmd, addr, replicaID, nil
 	}
 	return "", "", 0, errNotMembershipChange
 }
 
 func main() {
-	nodeID := flag.Int("nodeid", 1, "NodeID to use")
+	replicaID := flag.Int("replicaid", 1, "ReplicaID to use")
 	addr := flag.String("addr", "", "Nodehost address")
 	join := flag.Bool("join", false, "Joining a new node")
 	flag.Parse()
-	if len(*addr) == 0 && *nodeID != 1 && *nodeID != 2 && *nodeID != 3 {
+	if len(*addr) == 0 && *replicaID != 1 && *replicaID != 2 && *replicaID != 3 {
 		fmt.Fprintf(os.Stderr, "node id must be 1, 2 or 3 when address is not specified\n")
 		os.Exit(1)
 	}
@@ -132,7 +132,7 @@ func main() {
 	// here for simplicity.
 	if !*join {
 		for idx, v := range addresses {
-			// key is the NodeID, NodeID is not allowed to be 0
+			// key is the ReplicaID, ReplicaID is not allowed to be 0
 			// value is the raft address
 			initialMembers[uint64(idx+1)] = v
 		}
@@ -144,7 +144,7 @@ func main() {
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
-		nodeAddr = initialMembers[uint64(*nodeID)]
+		nodeAddr = initialMembers[uint64(*replicaID)]
 	}
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
@@ -155,9 +155,9 @@ func main() {
 	// config for raft node
 	// See GoDoc for all available options
 	rc := config.Config{
-		// ClusterID and NodeID of the raft node
-		NodeID:    uint64(*nodeID),
-		ClusterID: exampleClusterID,
+		// ShardID and ReplicaID of the raft node
+		ReplicaID: uint64(*replicaID),
+		ShardID:   exampleShardID,
 		// In this example, we assume the end-to-end round trip time (RTT) between
 		// NodeHost instances (on different machines, VMs or containers) are 200
 		// millisecond, it is set in the RTTMillisecond field of the
@@ -190,7 +190,7 @@ func main() {
 	datadir := filepath.Join(
 		"example-data",
 		"helloworld-data",
-		fmt.Sprintf("node%d", *nodeID))
+		fmt.Sprintf("node%d", *replicaID))
 	// config for the nodehost
 	// See GoDoc for all available options
 	// by default, insecure transport is used, you can choose to use Mutual TLS
@@ -268,7 +268,7 @@ func main() {
 			select {
 			case <-ticker.C:
 				ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-				result, err := nh.SyncRead(ctx, exampleClusterID, []byte{})
+				result, err := nh.SyncRead(ctx, exampleShardID, []byte{})
 				cancel()
 				if err == nil {
 					var count uint64
@@ -283,7 +283,7 @@ func main() {
 	raftStopper.RunWorker(func() {
 		// use a NO-OP client session here
 		// check the example in godoc to see how to use a regular client session
-		cs := nh.GetNoOPSession(exampleClusterID)
+		cs := nh.GetNoOPSession(exampleShardID)
 		for {
 			select {
 			case v, ok := <-ch:
@@ -292,9 +292,9 @@ func main() {
 				}
 				// remove the \n char
 				msg := strings.Replace(v, "\n", "", 1)
-				if cmd, addr, nodeID, err := splitMembershipChangeCmd(msg); err == nil {
+				if cmd, addr, replicaID, err := splitMembershipChangeCmd(msg); err == nil {
 					// input is a membership change request
-					makeMembershipChange(nh, cmd, addr, nodeID)
+					makeMembershipChange(nh, cmd, addr, replicaID)
 				} else {
 					// input is a regular message need to be proposed
 					ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

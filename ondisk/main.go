@@ -40,7 +40,7 @@ import (
 type RequestType uint64
 
 const (
-	exampleClusterID uint64 = 128
+	exampleShardID uint64 = 128
 )
 
 const (
@@ -81,12 +81,12 @@ func printUsage() {
 }
 
 func main() {
-	nodeID := flag.Int("nodeid", 1, "NodeID to use")
+	replicaID := flag.Int("replicaid", 1, "ReplicaID to use")
 	addr := flag.String("addr", "", "Nodehost address")
 	join := flag.Bool("join", false, "Joining a new node")
 	flag.Parse()
-	if len(*addr) == 0 && *nodeID != 1 && *nodeID != 2 && *nodeID != 3 {
-		fmt.Fprintf(os.Stderr, "node id must be 1, 2 or 3 when address is not specified\n")
+	if len(*addr) == 0 && *replicaID != 1 && *replicaID != 2 && *replicaID != 3 {
+		fmt.Fprintf(os.Stderr, "replica id must be 1, 2 or 3 when address is not specified\n")
 		os.Exit(1)
 	}
 	// https://github.com/golang/go/issues/17393
@@ -103,7 +103,7 @@ func main() {
 	if len(*addr) != 0 {
 		nodeAddr = *addr
 	} else {
-		nodeAddr = initialMembers[uint64(*nodeID)]
+		nodeAddr = initialMembers[uint64(*replicaID)]
 	}
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -111,8 +111,8 @@ func main() {
 	logger.GetLogger("transport").SetLevel(logger.WARNING)
 	logger.GetLogger("grpc").SetLevel(logger.WARNING)
 	rc := config.Config{
-		NodeID:             uint64(*nodeID),
-		ClusterID:          exampleClusterID,
+		ReplicaID:          uint64(*replicaID),
+		ShardID:            exampleShardID,
 		ElectionRTT:        10,
 		HeartbeatRTT:       1,
 		CheckQuorum:        true,
@@ -122,7 +122,7 @@ func main() {
 	datadir := filepath.Join(
 		"example-data",
 		"helloworld-data",
-		fmt.Sprintf("node%d", *nodeID))
+		fmt.Sprintf("node%d", *replicaID))
 	nhc := config.NodeHostConfig{
 		WALDir:         datadir,
 		NodeHostDir:    datadir,
@@ -158,7 +158,7 @@ func main() {
 	})
 	printUsage()
 	raftStopper.RunWorker(func() {
-		cs := nh.GetNoOPSession(exampleClusterID)
+		cs := nh.GetNoOPSession(exampleShardID)
 		for {
 			select {
 			case v, ok := <-ch:
@@ -190,7 +190,7 @@ func main() {
 						fmt.Fprintf(os.Stderr, "SyncPropose returned error %v\n", err)
 					}
 				} else {
-					result, err := nh.SyncRead(ctx, exampleClusterID, []byte(key))
+					result, err := nh.SyncRead(ctx, exampleShardID, []byte(key))
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "SyncRead returned error %v\n", err)
 					} else {

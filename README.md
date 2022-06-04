@@ -3,7 +3,7 @@ This repo contains examples for [dragonboat](http://github.com/lni/dragonboat).
 
 The master branch and the release-3.3 branch of this repo target Dragonboat's master and v3.3.x releases.
 
-Go 1.14 or later releases with [Go module](https://github.com/golang/go/wiki/Modules) support is required.
+Go 1.17 or later releases with [Go module](https://github.com/golang/go/wiki/Modules) support is required.
 
 ## Notice ##
 

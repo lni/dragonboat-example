@@ -14,17 +14,17 @@ make ondisk
 使用下列命令在同一台计算机的三个终端上启动三个本例程的实例。
 
 ```
-./example-ondisk -nodeid 1
+./example-ondisk -replicaid 1
 ```
 ```
-./example-ondisk -nodeid 2
+./example-ondisk -replicaid 2
 ```
 ```
-./example-ondisk -nodeid 3
+./example-ondisk -replicaid 3
 ```
 
-这将组建一个三节点的Raft集群，每个节点都由上述命令行命令中-nodeid所指定的NodeID值来标示。为求简易，本示例被
-设定为需用三个节点且NodeID值必须为1, 2, 3。
+这将组建一个三节点的Raft集群，每个节点都由上述命令行命令中-replicaid所指定的ReplicaID值来标示。为求简易，本示例被
+设定为需用三个节点且ReplicaID值必须为1, 2, 3。
 
 您可以以下列两种格式输入一个命令以使用本例程 -
 

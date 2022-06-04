@@ -14,15 +14,15 @@ make ondisk
 Start three instances of the example program on the same machine in three different terminals:
 
 ```
-./example-ondisk -nodeid 1
+./example-ondisk -replicaid 1
 ```
 ```
-./example-ondisk -nodeid 2
+./example-ondisk -replicaid 2
 ```
 ```
-./example-ondisk -nodeid 3
+./example-ondisk -replicaid 3
 ```
-This forms a Raft cluster with 3 nodes, each of them is identified by the NodeID specified on the command line. For simplicity, this example program has been hardcoded to use 3 nodes and their node id values are 1, 2 and 3.
+This forms a Raft group with 3 replicas, each of them is identified by the ReplicaID specified on the command line. For simplicity, this example program has been hardcoded to use 3 nodes and their node id values are 1, 2 and 3.
 
 You can type in a message in one of the two following formats - 
 ```
@@ -49,4 +49,4 @@ To support the above described concurrent access to statemachine.IOnDiskStateMac
 
 See godoc in [diskkv.go](diskkv.go) for more detials.
 
-The main function can be found in [main.go](main.go), it is the place where we instantiated the NodeHost instance, added the created example Raft cluster to it. User inputs are also handled here to allow users to put or get key-value pairs.
+The main function can be found in [main.go](main.go), it is the place where we instantiated the NodeHost instance, added the created example Ragroupp to it. User inputs are also handled here to allow users to put or get key-value pairs.

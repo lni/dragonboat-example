@@ -40,8 +40,8 @@ import (
 const (
 	// we use two raft groups in this example, they are identified by the cluster
 	// ID values below
-	clusterID1 uint64 = 100
-	clusterID2 uint64 = 101
+	shardID1 uint64 = 100
+	shardID2 uint64 = 101
 )
 
 var (
@@ -55,10 +55,10 @@ var (
 )
 
 func main() {
-	nodeID := flag.Int("nodeid", 1, "NodeID to use")
+	replicaID := flag.Int("nodeid", 1, "ReplicaID to use")
 	flag.Parse()
-	if *nodeID > 3 || *nodeID < 1 {
-		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *nodeID)
+	if *replicaID > 3 || *replicaID < 1 {
+		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *replicaID)
 		os.Exit(1)
 	}
 	// https://github.com/golang/go/issues/17393
@@ -67,11 +67,11 @@ func main() {
 	}
 	initialMembers := make(map[uint64]string)
 	for idx, v := range addresses {
-		// key is the NodeID, NodeID is not allowed to be 0
+		// key is the ReplicaID, ReplicaID is not allowed to be 0
 		// value is the raft address
 		initialMembers[uint64(idx+1)] = v
 	}
-	nodeAddr := initialMembers[uint64(*nodeID)]
+	nodeAddr := initialMembers[uint64(*replicaID)]
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -79,9 +79,9 @@ func main() {
 	logger.GetLogger("transport").SetLevel(logger.WARNING)
 	logger.GetLogger("grpc").SetLevel(logger.WARNING)
 	// config for raft
-	// note the ClusterID value is not specified here
+	// note the ShardID value is not specified here
 	rc := config.Config{
-		NodeID:             uint64(*nodeID),
+		ReplicaID:          uint64(*replicaID),
 		ElectionRTT:        5,
 		HeartbeatRTT:       1,
 		CheckQuorum:        true,
@@ -91,7 +91,7 @@ func main() {
 	datadir := filepath.Join(
 		"example-data",
 		"multigroup-data",
-		fmt.Sprintf("node%d", *nodeID))
+		fmt.Sprintf("node%d", *replicaID))
 	// config for the nodehost
 	// by default, insecure transport is used, you can choose to use Mutual TLS
 	// Authentication to authenticate both servers and clients. To use Mutual
@@ -122,14 +122,14 @@ func main() {
 	// start the first cluster
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its
 	// behaviour is identical to the one used in the Hello World example.
-	rc.ClusterID = clusterID1
+	rc.ShardID = shardID1
 	if err := nh.StartCluster(initialMembers, false, NewExampleStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
 	}
 	// start the second cluster
 	// we use SecondStateMachine as the IStateMachine for the second cluster
-	rc.ClusterID = clusterID2
+	rc.ShardID = shardID2
 	if err := nh.StartCluster(initialMembers, false, NewSecondStateMachine, rc); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to add cluster, %v\n", err)
 		os.Exit(1)
@@ -157,8 +157,8 @@ func main() {
 	raftStopper.RunWorker(func() {
 		// use NO-OP client session here
 		// check the example in godoc to see how to use a regular client session
-		cs1 := nh.GetNoOPSession(clusterID1)
-		cs2 := nh.GetNoOPSession(clusterID2)
+		cs1 := nh.GetNoOPSession(shardID1)
+		cs2 := nh.GetNoOPSession(shardID2)
 		for {
 			select {
 			case v, ok := <-ch:
