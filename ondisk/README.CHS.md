@@ -1,7 +1,7 @@
 # 示例4 基于磁盘的状态机 #
 
 ## 关于 ##
-本例用一个基于(Pebble)[https://github.com/cockroachdb/pebble]的分布式Key-Value数据库来展示Dragonboat的基于磁盘的状态机支持。
+本例用一个基于[Pebble](https://github.com/cockroachdb/pebble)的分布式Key-Value数据库来展示Dragonboat的基于磁盘的状态机支持。
 
 ## 编译 ##
 用下列命令编译本例的可执行文件 - 
