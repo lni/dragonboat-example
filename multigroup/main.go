@@ -55,10 +55,10 @@ var (
 )
 
 func main() {
-	replicaID := flag.Int("nodeid", 1, "ReplicaID to use")
+	nodeId := flag.Int("nodeid", 1, "ReplicaID to use")
 	flag.Parse()
-	if *replicaID > 3 || *replicaID < 1 {
-		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *replicaID)
+	if *nodeId > 3 || *nodeId < 1 {
+		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *nodeId)
 		os.Exit(1)
 	}
 	// https://github.com/golang/go/issues/17393
@@ -71,7 +71,7 @@ func main() {
 		// value is the raft address
 		initialMembers[uint64(idx+1)] = v
 	}
-	nodeAddr := initialMembers[uint64(*replicaID)]
+	nodeAddr := initialMembers[uint64(*nodeId)]
 	fmt.Fprintf(os.Stdout, "node address: %s\n", nodeAddr)
 	// change the log verbosity
 	logger.GetLogger("raft").SetLevel(logger.ERROR)
@@ -81,7 +81,7 @@ func main() {
 	// config for raft
 	// note the ShardID value is not specified here
 	rc := config.Config{
-		ReplicaID:          uint64(*replicaID),
+		ReplicaID:          uint64(*nodeId),
 		ElectionRTT:        5,
 		HeartbeatRTT:       1,
 		CheckQuorum:        true,
@@ -91,7 +91,7 @@ func main() {
 	datadir := filepath.Join(
 		"example-data",
 		"multigroup-data",
-		fmt.Sprintf("node%d", *replicaID))
+		fmt.Sprintf("node%d", *nodeId))
 	// config for the nodehost
 	// by default, insecure transport is used, you can choose to use Mutual TLS
 	// Authentication to authenticate both servers and clients. To use Mutual
