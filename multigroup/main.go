@@ -55,7 +55,7 @@ var (
 )
 
 func main() {
-	nodeId := flag.Int("nodeid", 1, "ReplicaID to use")
+	nodeId := flag.Int("nodeid", 1, "NodeID to use")
 	flag.Parse()
 	if *nodeId > 3 || *nodeId < 1 {
 		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *nodeId)
