@@ -14,15 +14,15 @@ make multigroup
 在同一主机上三个不同的终端terminals上启动三个示例程序的进程：
 
 ```
-./example-multigroup -replicaid 1
+./example-multigroup -nodeid 1
 ```
 ```
-./example-multigroup -replicaid 2
+./example-multigroup -nodeid 2
 ```
 ```
-./example-multigroup -replicaid 3
+./example-multigroup -nodeid 3
 ```
-这将组建两个三节点的Raft集群，每个节点都由上述命令行命令中-replicaid所指定的ReplicaID值来标示。为求简易，本示例被设定为需用三个节点且ReplicaID值必须为1, 2, 3。
+这将组建两个三节点的Raft集群，每个节点都由上述命令行命令中-nodeid所指定的NodeID值来标示。为求简易，本示例被设定为需用三个节点且ReplicaID值必须为1, 2, 3。
 
 与之前的helloworld示例一样，你可以在一个终端上输入一条消息，它将会被复制到别的节点上。在本示例中，如果你输入一个以问好"?"结尾的消息，那么它会被提议到第二个raft组中，其余不以"?"结尾的消息均提议至第一个raft组中。
 
