@@ -40,8 +40,8 @@ require (
 	github.com/valyala/histogram v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/exp v0.0.0-20200513190911-00229845015e // indirect
-	golang.org/x/net v0.0.0-20211008194852-3b03d305991f // indirect
-	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 )
 
 go 1.17
