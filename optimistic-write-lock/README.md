@@ -1,17 +1,24 @@
 ## Optimistic Write Lock
 
 This example illustrates use of optimistic write locks to implement a consistent finite state machine.
-
 The example starts an HTTP server which performs queries on GET and proposes updates on PUT.
-
 Any proposed update with an invalid version will be rejected.
-
 Clients must read the version of the key and supply it during update in order to modify the value.
 
-```go
-> make run *.go
+## Build ##
+To build the executable -
+```
+cd $HOME/src/dragonboat-example
+make multigroup
 ```
 
+## Run This Example ##
+
+```
+./example-optimistic-write-lock
+```
+
+Then you can issue HTTP requests:
 ```
 > curl -X PUT "http://localhost:8001/testkey?val=testvalue"
 {"key":"/testkey","ver":6,"val":"testvalue"}
