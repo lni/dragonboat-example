@@ -9,7 +9,7 @@ Clients must read the version of the key and supply it during update in order to
 To build the executable -
 ```
 cd $HOME/src/dragonboat-example
-make multigroup
+make optimistic-write-lock
 ```
 
 ## Run This Example ##
