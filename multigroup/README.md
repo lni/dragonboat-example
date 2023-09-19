@@ -14,15 +14,15 @@ make multigroup
 Start three instances of the example program on the same machine in three different terminals:
 
 ```
-./example-multigroup -replicaid 1
+./example-multigroup -nodeid 1
 ```
 ```
-./example-multigroup -replicaid 2
+./example-multigroup -nodeid 2
 ```
 ```
-./example-multigroup -replicaid 3
+./example-multigroup -nodeid 3
 ```
-This forms two Raft groups each with 3 nodes, nodes are identified by the ReplicaID values specified on the command line while two Raft groups are identified by the ShardID values harded coded in main.go. For simplicity, this example program has been hardcoded to use 3 nodes for each raft group and their replica id values are 1, 2 and 3.
+This forms two Raft groups each with 3 nodes, nodes are identified by the NodeID values specified on the command line while two Raft groups are identified by the ShardID values harded coded in main.go. For simplicity, this example program has been hardcoded to use 3 nodes for each raft group and their replica id values are 1, 2 and 3.
 
 Similar to the previous helloworld example, you can type in a message in one of the terminals and your input message will be replicated to other nodes. In this example, if you type something ends with a question mark "?", then that particular message is going to be proposed to the second raft group, while messages without the question mark at the end are proposed to the first raft group. 
 
