@@ -55,7 +55,7 @@ var (
 )
 
 func main() {
-	replicaID := flag.Int("nodeid", 1, "ReplicaID to use")
+	replicaID := flag.Int("replicaid", 1, "ReplicaID to use")
 	flag.Parse()
 	if *replicaID > 3 || *replicaID < 1 {
 		fmt.Fprintf(os.Stderr, "invalid nodeid %d, it must be 1, 2 or 3", *replicaID)
@@ -118,7 +118,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer nh.Close()
 	// start the first cluster
 	// we use ExampleStateMachine as the IStateMachine for this cluster, its
 	// behaviour is identical to the one used in the Hello World example.
